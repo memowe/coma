@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use Mojolicious::Lite;
+use Mojo::Util 'trim';
 
 # prepare database access
 use ORLite {
@@ -32,7 +33,11 @@ use ORLite {
     },
 };
 
-get '/' => 'index';
+# insert form and overview
+get '/' => sub {
+    my $c = shift;
+    $c->stash(connections => [Coma::Connection->select]);
+} => 'index';
 
 # JSON entity completion
 any '/entity_completion' => sub {
@@ -68,6 +73,21 @@ any '/connection_completion' => sub {
     $c->render(json => [map $_->type => @connections]);
 };
 
+# add a connection
+post '/add_connection' => sub {
+    my $c = shift;
+
+    # build and insert a new connection
+    my $connection  = Coma::Connection->new(
+        from_name   => trim($c->param('from_entity')),
+        type        => trim($c->param('type')),
+        to_name     => trim($c->param('to_entity')),
+    )->insert;
+
+    # done
+    $c->redirect_to('index');
+};
+
 app->start;
 __DATA__
 
@@ -76,10 +96,12 @@ __DATA__
 % title 'Welcome';
 
 %# enter a connection form
-%= form_for 'index' => begin
+%= t h2 => 'new edges'
+%= form_for 'add_connection' => begin
     %= text_field from_entity => '', id => 'from_entity'
     %= text_field type => '', id => 'type'
     %= text_field to_entity => '', id => 'to_entity'
+    %= submit_button 'add connection'
 % end
 
 %# auto-completion code
@@ -92,6 +114,14 @@ $(function() {
         source: '<%= url_for 'connection_completion' %>',
     });
 });
+% end
+
+%# dump everything
+%= t h2 => 'everything'
+%= t ol => begin
+% for my $conn (@$connections) {
+    %= t li => join ' ' => map $conn->$_ => qw(from_name type to_name)
+% }
 % end
 
 @@ layouts/default.html.ep
