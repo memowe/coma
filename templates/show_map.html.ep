@@ -1,8 +1,20 @@
 % layout 'default';
-% title 'Welcome';
+% my $title = 'Map ' . $map->name;
+% title $title;
+%= t h1 => $title
+
+%# dump connections
+%= t 'hr'
+%= t h2 => 'connections'
+%= t ol => begin
+% for my $conn (@$connections) {
+    %= t li => join ' ' => map $conn->$_ => qw(from_name type to_name)
+% }
+% end
 
 %# enter a connection form
-%= t h2 => 'new edges'
+%= t 'hr'
+%= t h2 => 'new edge →'
 %= form_for 'add_connection' => begin
     %= text_field from_entity => '', id => 'from_entity'
     %= text_field type => '', id => 'type'
@@ -21,12 +33,3 @@ $(function() {
     });
 });
 % end
-
-%# dump everything
-%= t h2 => 'everything'
-%= t ol => begin
-% for my $conn (@$connections) {
-    %= t li => join ' ' => map $conn->$_ => qw(from_name type to_name)
-% }
-% end
-

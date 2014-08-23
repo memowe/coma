@@ -11,31 +11,41 @@ use ORLite {
     create      => sub {
         my $dbh = shift;
 
+        # create the table for maps
+        $dbh->do('CREATE TABLE map (
+            id          INTEGER PRIMARY KEY,
+            name        STRING,
+            description STRING
+        );');
+
+        # insert a sample map
+        my $insert_map = $dbh->prepare('INSERT INTO map
+            (name, description) VALUES (?, ?)
+        ');
+        $insert_map->execute('Beispiel', 'Eine einfache Beispiel-Concept-Map');
+        my $example_map_id = $dbh->last_insert_id((undef) x 4);
+
         # create the table for connections
         $dbh->do('CREATE TABLE connection (
+            map_id      INTEGER,
             from_name   STRING,
             type        STRING,
             to_name     STRING,
-            PRIMARY KEY (from_name, to_name, type)
+            PRIMARY KEY (map_id, from_name, type, to_name),
+            FOREIGN KEY (map_id) REFERENCES map (id)
         );');
 
         # insert some example connections
-        my $insert = $dbh->prepare('INSERT INTO connection
-            (from_name, type, to_name) VALUES (?, ?, ?)
+        my $insert_connection = $dbh->prepare('INSERT INTO connection
+            (map_id, from_name, type, to_name) VALUES (?, ?, ?, ?)
         ');
-        $insert->execute(@$_) for @{[
-            [qw(Java isa Programmiersprache)],
-            [qw(Java has JVM)],
-            [qw(Programmiersprache isa JVM)],
+        $insert_connection->execute(@$_) for @{[
+            [$example_map_id, qw(Java isa Programmiersprache)],
+            [$example_map_id, qw(Java has JVM)],
+            [$example_map_id, qw(Programmiersprache isa JVM)],
         ]};
     },
 };
-
-# insert form and overview
-get '/' => sub {
-    my $c = shift;
-    $c->stash(connections => [Coma::Connection->select]);
-} => 'index';
 
 # JSON entity completion
 any '/entity_completion' => sub {
@@ -71,20 +81,50 @@ any '/connection_completion' => sub {
     $c->render(json => [map $_->type => @connections]);
 };
 
+# show all maps
+get '/' => sub {
+    my $c = shift;
+    $c->stash(maps => [Coma::Map->select]);
+} => 'list_maps';
+
+# under here: work on one map
+under '/map/:map_id' => [map_id => qr/\d+/] => sub {
+    my $c = shift;
+
+    # try to load map
+    my $map = eval { Coma::Map->load($c->param('map_id')) };
+    $c->render_not_found and return if $@;
+
+    # ok, we have a map
+    $c->stash(map => $map);
+    return 1;
+};
+
+# show one map
+get '/' => sub {
+    my $c   = shift;
+    my $map = $c->stash('map');
+
+    # load connections
+    my @connections = Coma::Connection->select('where map_id = ?', $map->id);
+    $c->stash(connections => \@connections);
+} => 'show_map';
+
 # add a connection
-post '/add_connection' => sub {
+post '/' => sub {
     my $c = shift;
 
     # build and insert a new connection
     my $connection  = Coma::Connection->new(
+        map_id      => $c->stash('map')->id,
         from_name   => trim($c->param('from_entity')),
         type        => trim($c->param('type')),
         to_name     => trim($c->param('to_entity')),
     )->insert;
 
     # done
-    $c->redirect_to('index');
-};
+    $c->redirect_to('show_map');
+} => 'add_connection';
 
 app->start;
 __END__

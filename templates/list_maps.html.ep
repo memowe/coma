@@ -1,0 +1,14 @@
+% layout 'default';
+% my $title = 'Map overview';
+% title $title;
+%= t h1 => $title
+
+%# list all maps
+%= t 'hr'
+%= t ul => begin
+% for my $map (@$maps) {
+    %= t li => begin
+        %= link_to $map->name => 'show_map', {map_id => $map->id}
+    % end
+% }
+% end

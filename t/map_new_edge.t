@@ -21,10 +21,10 @@ my $t = Test::Mojo->new;
 $t->ua->max_redirects(1);
 
 # connection not there yet
-$t->get_ok('/')->content_unlike(qr/Perl isa Programmiersprache/);
+$t->get_ok('/map/1')->content_unlike(qr/Perl isa Programmiersprache/);
 
 # add the new connection
-$t->post_ok('/add_connection', form => {
+$t->post_ok('/map/1', form => {
     from_entity => 'Perl', type => 'isa', to_entity => 'Programmiersprache'
 });
 
