@@ -47,6 +47,20 @@ is $map_links2->size, $map_links1->size + 1, 'one more map';
 $foo_map_link = $map_links2->first(sub { shift->text eq 'foo' });
 ok defined $foo_map_link, 'foo map found';
 
+# remember id
+my ($foo_map_id) = $foo_map_link->attr('href') =~ m|map/(\d+)|;
+
+# now delete it
+$t->post_ok("/map/$foo_map_id/delete");
+$t->text_is(h1 => 'Delete map foo');
+
+# now delete it really
+$t->post_ok("/map/$foo_map_id/delete_sure");
+my $map_links3 = $t->tx->res->dom('ul a');
+is $map_links3->size, $map_links1->size, 'one less map';
+$foo_map_link = $map_links3->first(sub { shift->text eq 'foo' });
+ok ! defined $foo_map_link, 'no foo map found';
+
 # cleanup
 unlink $ENV{COMA_DB};
 ok ! -e $ENV{COMA_DB}, 'test database removed';

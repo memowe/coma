@@ -39,3 +39,10 @@ $(function() {
     });
 });
 % end
+
+%# delete this map?
+%= t 'hr'
+%= t h2 => 'delete this map'
+%= form_for delete_map => begin
+    %= submit_button 'do it'
+% end

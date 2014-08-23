@@ -147,5 +147,19 @@ post '/' => sub {
     $c->redirect_to('show_map');
 } => 'add_connection';
 
+# delete a map
+post '/delete' => 'delete_map';
+
+# delete a map and the user is sure
+post '/delete_sure' => sub {
+    my $c = shift;
+
+    # delete it
+    $c->stash('map')->delete;
+
+    # done
+    $c->redirect_to('list_maps');
+} => 'delete_map_sure';
+
 app->start;
 __END__
