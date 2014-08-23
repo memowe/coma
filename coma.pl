@@ -94,6 +94,20 @@ get '/' => sub {
     $c->stash(maps => [Coma::Map->select]);
 } => 'list_maps';
 
+# add a map
+post '/' => sub {
+    my $c = shift;
+
+    # create the map
+    my $map = Coma::Map->new(
+        name        => $c->param('name'),
+        description => $c->param('description'),
+    )->insert;
+
+    # done
+    $c->redirect_to('show_map', map_id => $map->id);
+} => 'add_map';
+
 # under here: work on one map
 under '/map/:map_id' => [map_id => qr/\d+/] => sub {
     my $c = shift;

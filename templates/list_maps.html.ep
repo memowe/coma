@@ -12,3 +12,18 @@
     % end
 % }
 % end
+
+%# add a map
+%= t 'hr'
+%= t h2 => 'add a map'
+%= form_for add_map => begin
+    <table>
+        <tr><th><%= label_for name => 'name' %></th><td>
+            %= text_field name => (id => 'name')
+        </td></tr>
+        <tr><th><%= label_for description => 'description' %></th><td>
+            %= text_area description => (rows => 3, cols => 60)
+        </td></tr>
+    </table>
+    %= submit_button 'add'
+% end

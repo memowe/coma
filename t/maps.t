@@ -28,9 +28,24 @@ my $map_url = $t->tx->res->dom->at('ul li:first-child a')->attr('href');
 # map view
 $t->get_ok($map_url)->text_is(h1 => 'Map Beispiel');
 
-# map descript (markdown)
-$t->text_like('#description p' => qr/Eine/);
-$t->text_like('#description p strong' => qr/Beispiel-Concept-Map/);
+# map description (markdown)
+$t->text_is('#description p' => 'Eine');
+$t->text_is('#description p strong' => 'Beispiel-Concept-Map');
+
+# make sure there's no foo map
+my $map_links1 = $t->get_ok('/')->tx->res->dom('ul a');
+my $foo_map_link = $map_links1->first(sub { shift->text eq 'foo' });
+ok ! defined $foo_map_link, 'no foo map found';
+
+# let's create one
+$t->post_ok('/', form => {name => 'foo', description => 'bar'});
+$t->text_is(h1 => 'Map foo')->text_is('#description p' => 'bar');
+
+# is it listed?
+my $map_links2 = $t->get_ok('/')->tx->res->dom('ul a');
+is $map_links2->size, $map_links1->size + 1, 'one more map';
+$foo_map_link = $map_links2->first(sub { shift->text eq 'foo' });
+ok defined $foo_map_link, 'foo map found';
 
 # cleanup
 unlink $ENV{COMA_DB};
