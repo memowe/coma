@@ -16,9 +16,7 @@ use ORLite {
             from_name   STRING,
             type        STRING,
             to_name     STRING,
-            PRIMARY KEY (from_name, to_name, type),
-            FOREIGN KEY (from_name) REFERENCES entity (name),
-            FOREIGN KEY (to_name) REFERENCES entity (name)
+            PRIMARY KEY (from_name, to_name, type)
         );');
 
         # insert some example connections
