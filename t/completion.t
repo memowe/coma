@@ -47,7 +47,7 @@ $t->get_ok('/connection_completion?term=s');
 my @types = @{$t->tx->res->json};
 ok @types > 0, 'found a connection';
 is scalar(grep /s/i => @types), scalar(@types), 'all types';
-is scalar(keys %{{map $_ => 1 => @types}}), scalar(@types), 'unique types';
+is scalar(keys %{{map {$_ => 1} @types}}), scalar(@types), 'unique types';
 ok 'isa' ~~ @types, 'found "isa"';
 ok 'has' ~~ @types, 'found "has"';
 
