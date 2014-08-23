@@ -10,15 +10,6 @@ use ORLite {
     create      => sub {
         my $dbh = shift;
 
-        # create the table for entities
-        $dbh->do('CREATE TABLE entity (
-            name STRING PRIMARY KEY
-        );');
-
-        # insert some example entities
-        my $insert = $dbh->prepare('INSERT INTO entity (name) VALUES (?)');
-        $insert->execute($_) for qw(Programmiersprache Java JVM);
-
         # create the table for connections
         $dbh->do('CREATE TABLE connection (
             from_name   STRING,
@@ -30,7 +21,7 @@ use ORLite {
         );');
 
         # insert some example connections
-        $insert = $dbh->prepare('INSERT INTO connection
+        my $insert = $dbh->prepare('INSERT INTO connection
             (from_name, type, to_name) VALUES (?, ?, ?)
         ');
         $insert->execute(@$_) for @{[
@@ -48,11 +39,19 @@ any '/entity_completion' => sub {
     my $c   = shift;
     my $str = $c->param('term') // 'xnorfzt';
 
-    # find matching entities
-    my @entities = Coma::Entity->select('WHERE name LIKE ?', "%$str%");
+    # find left-matching connections
+    my @left  = Coma::Connection->select('WHERE from_name LIKE ?', "%$str%");
+    my @right = Coma::Connection->select('WHERE to_name   LIKE ?', "%$str%");
+
+    # unique entity names
+    my %names = (
+        (map {$_->from_name => 1} @left),
+        (map {$_->to_name   => 1} @right),
+    );
+    my @names = keys %names;
 
     # render as json
-    $c->render(json => [map $_->name => @entities]);
+    $c->render(json => \@names);
 };
 
 # JSON connection completion
