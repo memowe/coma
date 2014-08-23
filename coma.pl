@@ -5,7 +5,7 @@ use Mojolicious::Lite;
 # prepare database access
 use ORLite {
     package     => 'Coma',
-    file        => app->home->rel_file('data/graph.sqlite'),
+    file        => $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite'),
     unicode     => 1,
     create      => sub {
         my $dbh = shift;

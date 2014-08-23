@@ -6,8 +6,15 @@ use Test::More;
 use Test::Mojo;
 use FindBin '$Bin';
 
+# prepare test database
+$ENV{COMA_DB} = "$Bin/graph.sqlite";
+ok ! -e $ENV{COMA_DB}, 'no test database found';
+
 # get the lite script
 require "$Bin/../coma.pl";
+
+# got a test database?
+ok -e $ENV{COMA_DB}, 'test database found';
 
 # prepare
 my $t = Test::Mojo->new;
@@ -57,5 +64,9 @@ ok ! ('isa' ~~ @types), '"isa" not found';
 $t->get_ok('/connection_completion?term=xnorfzt');
 @types = @{$t->tx->res->json};
 is scalar(@types), 0, 'nothing found';
+
+# cleanup
+unlink $ENV{COMA_DB};
+ok ! -e $ENV{COMA_DB}, 'test database removed';
 
 done_testing;
