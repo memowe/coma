@@ -54,8 +54,10 @@ my ($foo_map_id) = $foo_map_link->attr('href') =~ m|map/(\d+)|;
 $t->post_ok("/map/$foo_map_id/delete");
 $t->text_is(h1 => 'Delete map foo');
 
-# now delete it really
+# now delete it, really
 $t->post_ok("/map/$foo_map_id/delete_sure");
+
+# is it gone?
 my $map_links3 = $t->tx->res->dom('ul a');
 is $map_links3->size, $map_links1->size, 'one less map';
 $foo_map_link = $map_links3->first(sub { shift->text eq 'foo' });
