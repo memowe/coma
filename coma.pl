@@ -2,31 +2,41 @@
 
 use Mojolicious::Lite;
 
-# read config file
-BEGIN { # need this namespace magic to insert example entities early
-    our $config = plugin 'Config';
-};
-my $config = $main::config;
-
 # prepare database access
 use ORLite {
     package     => 'Coma',
     file        => app->home->rel_file('data/graph.sqlite'),
     unicode     => 1,
     create      => sub {
-        my $dbh     = shift;
-        my $config  = $main::config;
+        my $dbh = shift;
 
-        # create database scheme
-        $dbh->do('
-        CREATE TABLE entity (
-            id      INTEGER PRIMARY KEY,
-            name    STRING
+        # create the table for entities
+        $dbh->do('CREATE TABLE entity (
+            name STRING PRIMARY KEY
         );');
 
         # insert some example entities
         my $insert = $dbh->prepare('INSERT INTO entity (name) VALUES (?)');
-        $insert->execute($_) for @{$config->{example_entities}};
+        $insert->execute($_) for qw(Programmiersprache Java JVM);
+
+        # create the table for connections
+        $dbh->do('CREATE TABLE connection (
+            from_name   STRING,
+            type        STRING,
+            to_name     STRING,
+            PRIMARY KEY (from_name, to_name, type),
+            FOREIGN KEY (from_name) REFERENCES entity (name),
+            FOREIGN KEY (to_name) REFERENCES entity (name)
+        );');
+
+        # insert some example connections
+        $insert = $dbh->prepare('INSERT INTO connection
+            (from_name, type, to_name) VALUES (?, ?, ?)
+        ');
+        $insert->execute(@$_) for @{[
+            [qw(Java isa Programmiersprache)],
+            [qw(Java has JVM)],
+        ]};
     },
 };
 
@@ -44,6 +54,20 @@ any '/entity_completion' => sub {
     $c->render(json => [map $_->name => @entities]);
 };
 
+# JSON connection completion
+any '/connection_completion' => sub {
+    my $c   = shift;
+    my $str = $c->param('term') // 'xnorfzt';
+
+    # find unique connection types (represented by any connection)
+    my @connections = Coma::Connection->select(
+        'WHERE type LIKE ? GROUP BY type', "%$str%"
+    );
+
+    # render as json
+    $c->render(json => [map $_->type => @connections]);
+};
+
 app->start;
 __DATA__
 
@@ -51,16 +75,21 @@ __DATA__
 % layout 'default';
 % title 'Welcome';
 
-%# auto-completion form
+%# enter a connection form
 %= form_for 'index' => begin
-    %= text_field entity => '', id => 'entity'
+    %= text_field from_entity => '', id => 'from_entity'
+    %= text_field type => '', id => 'type'
+    %= text_field to_entity => '', id => 'to_entity'
 % end
 
 %# auto-completion code
 %= javascript begin
 $(function() {
-    $('#entity').autocomplete({
+    $('#from_entity, #to_entity').autocomplete({
         source: '<%= url_for 'entity_completion' %>',
+    });
+    $('#type').autocomplete({
+        source: '<%= url_for 'connection_completion' %>',
     });
 });
 % end
