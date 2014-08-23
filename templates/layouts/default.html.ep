@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    %= javascript 'jquery.js'
+    %= javascript 'jquery-ui.js'
+    %= stylesheet 'jquery-ui.css'
+</head>
+<body>
+%= content
+</body>
+</html>
