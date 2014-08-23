@@ -44,14 +44,14 @@ any '/entity_completion' => sub {
     my $c   = shift;
     my $str = $c->param('term') // 'xnorfzt';
 
-    # find left-matching connections
-    my @left  = Coma::Connection->select('WHERE from_name LIKE ?', "%$str%");
-    my @right = Coma::Connection->select('WHERE to_name   LIKE ?', "%$str%");
+    # find matching connections for both from and to part
+    my @fromm   = Coma::Connection->select('WHERE from_name LIKE ?', "%$str%");
+    my @tom     = Coma::Connection->select('WHERE to_name   LIKE ?', "%$str%");
 
     # unique entity names
     my %names = (
-        (map {$_->from_name => 1} @left),
-        (map {$_->to_name   => 1} @right),
+        (map {$_->from_name => 1} @fromm),
+        (map {$_->to_name   => 1} @tom),
     );
     my @names = keys %names;
 
