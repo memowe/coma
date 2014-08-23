@@ -36,6 +36,7 @@ use ORLite {
         $insert->execute(@$_) for @{[
             [qw(Java isa Programmiersprache)],
             [qw(Java has JVM)],
+            [qw(Programmiersprache isa JVM)],
         ]};
     },
 };
