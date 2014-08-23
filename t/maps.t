@@ -28,6 +28,10 @@ my $map_url = $t->tx->res->dom->at('ul li:first-child a')->attr('href');
 # map view
 $t->get_ok($map_url)->text_is(h1 => 'Map Beispiel');
 
+# map descript (markdown)
+$t->text_like('#description p' => qr/Eine/);
+$t->text_like('#description p strong' => qr/Beispiel-Concept-Map/);
+
 # cleanup
 unlink $ENV{COMA_DB};
 ok ! -e $ENV{COMA_DB}, 'test database removed';

@@ -2,6 +2,13 @@
 
 use Mojolicious::Lite;
 use Mojo::Util 'trim';
+use Text::Markdown 'markdown';
+
+# prepare markdown
+helper markdown => sub {
+    my ($c, $text) = @_;
+    return markdown $text;
+};
 
 # prepare database access
 use ORLite {
@@ -22,7 +29,7 @@ use ORLite {
         my $insert_map = $dbh->prepare('INSERT INTO map
             (name, description) VALUES (?, ?)
         ');
-        $insert_map->execute('Beispiel', 'Eine einfache Beispiel-Concept-Map');
+        $insert_map->execute('Beispiel', 'Eine **Beispiel-Concept-Map**');
         my $example_map_id = $dbh->last_insert_id((undef) x 4);
 
         # create the table for connections

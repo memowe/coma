@@ -3,6 +3,12 @@
 % title $title;
 %= t h1 => $title
 
+%# map description
+%= t 'hr'
+%= t div => (id => 'description') => begin
+    %== markdown $map->description
+% end
+
 %# dump connections
 %= t 'hr'
 %= t h2 => 'connections'
