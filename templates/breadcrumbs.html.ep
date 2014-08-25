@@ -1,6 +1,6 @@
 %# expecting a lol of link_to arguments or strong words
 % my @linklist = map {
-%   ref $_ eq 'ARRAY' ? link_to(@$_) : t strong => $_
+%   ref $_ eq 'ARRAY' ? link_to @$_ : t strong => $_
 % } @{stash('breadcrumbs') // []};
 % if (@linklist) {
     %= t div => (id => 'breadcrumb') => begin
