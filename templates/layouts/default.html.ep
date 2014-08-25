@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= title %></title>
+    <title><%= 'coma: ' . title %></title>
     %= javascript '/jquery.js'
     %= javascript '/jquery-ui.js'
     %= javascript '/raphael-min.js'
@@ -10,6 +10,10 @@
     %= stylesheet '/jquery-ui.css'
 </head>
 <body>
+%= include 'breadcrumbs'
+<hr>
 %= content
+<hr>
+%= include 'breadcrumbs'
 </body>
 </html>

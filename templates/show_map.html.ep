@@ -1,6 +1,6 @@
 % layout 'default';
 % my $title = 'Map ' . $map->name;
-% title $title;
+% title $title, breadcrumbs => [[overview => 'list_maps'], $title];
 %= t h1 => $title
 
 %# map description
