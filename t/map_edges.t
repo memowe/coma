@@ -25,11 +25,19 @@ $t->get_ok('/map/1')->content_unlike(qr/Perl isa Programmiersprache/);
 
 # add the new connection
 $t->post_ok('/map/1', form => {
-    from_entity => 'Perl', type => 'isa', to_entity => 'Programmiersprache'
+    from => 'Perl', type => 'isa', to => 'Programmiersprache'
 });
 
 # now it's there
 $t->content_like(qr/Perl isa Programmiersprache/);
+
+# delete it
+$t->post_ok('/map/1/delete_connection', form => {
+    from => 'Perl', type => 'isa', to => 'Programmiersprache'
+});
+
+# it's gone again
+$t->get_ok('/map/1')->content_unlike(qr/Perl isa Programmiersprache/);
 
 # cleanup
 unlink $ENV{COMA_DB};

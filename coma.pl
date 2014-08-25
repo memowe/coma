@@ -138,14 +138,29 @@ post '/' => sub {
     # build and insert a new connection
     my $connection  = Coma::Connection->new(
         map_id      => $c->stash('map')->id,
-        from_name   => trim($c->param('from_entity')),
+        from_name   => trim($c->param('from')),
         type        => trim($c->param('type')),
-        to_name     => trim($c->param('to_entity')),
+        to_name     => trim($c->param('to')),
     )->insert;
 
     # done
     $c->redirect_to('show_map');
 } => 'add_connection';
+
+# delete a connection
+post '/delete_connection' => sub {
+    my $c   = shift;
+    my $map = $c->stash('map');
+
+    # delete all matching connections (<= 1)
+    Coma::Connection->delete_where(
+        'map_id = ? AND from_name = ? AND type = ? AND to_name = ?',
+        $map->id, $c->param('from'), $c->param('type'), $c->param('to'),
+    );
+
+    # done
+    $c->redirect_to('show_map', map_id => $map->id);
+};
 
 # delete a map
 post '/delete' => 'delete_map';

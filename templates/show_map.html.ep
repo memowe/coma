@@ -14,7 +14,15 @@
 %= t h2 => 'connections'
 %= t ol => begin
 % for my $conn (@$connections) {
-    %= t li => join ' ' => map $conn->$_ => qw(from_name type to_name)
+    %= t li => begin
+        %= form_for delete_connection => begin
+            %= hidden_field from => $conn->from_name
+            %= hidden_field type => $conn->type
+            %= hidden_field to   => $conn->to_name
+            <%= $conn->from_name %> <%= $conn->type %> <%= $conn->to_name %>
+            %= submit_button 'x'
+        % end
+    % end
 % }
 % end
 
@@ -22,16 +30,16 @@
 %= t 'hr'
 %= t h2 => 'new edge →'
 %= form_for 'add_connection' => begin
-    %= text_field from_entity => '', id => 'from_entity'
+    %= text_field from => '', id => 'from'
     %= text_field type => '', id => 'type'
-    %= text_field to_entity => '', id => 'to_entity'
+    %= text_field to   => '', id => 'to'
     %= submit_button 'add connection'
 % end
 
 %# auto-completion code
 %= javascript begin
 $(function() {
-    $('#from_entity, #to_entity').autocomplete({
+    $('#from, #to').autocomplete({
         source: '<%= url_for 'entity_completion' %>',
     });
     $('#type').autocomplete({
