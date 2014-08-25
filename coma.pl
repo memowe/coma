@@ -127,7 +127,10 @@ get '/' => sub {
     my $map = $c->stash('map');
 
     # load connections
-    my @connections = Coma::Connection->select('where map_id = ?', $map->id);
+    my @connections = Coma::Connection->select(
+        'where map_id = ? order by from_name, to_name',
+        $map->id
+    );
     $c->stash(connections => \@connections);
 } => 'show_map';
 
