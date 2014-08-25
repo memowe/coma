@@ -108,6 +108,12 @@ post '/' => sub {
     $c->redirect_to('show_map', map_id => $map->id);
 } => 'add_map';
 
+# show entity cloud
+get '/entities' => {text => 'TODO'};
+
+# show entity data
+get '/entity/:entity_name' => 'show_entity';
+
 # under here: work on one map
 under '/map/:map_id' => [map_id => qr/\d+/] => sub {
     my $c = shift;

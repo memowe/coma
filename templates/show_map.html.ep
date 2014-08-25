@@ -19,7 +19,23 @@
 $(function() {
 var g = new Graph();
 
-%# add all edges (adding nodes implicitely)
+%# add all nodes
+% my @entity_names = keys %{{
+%   (map {$_->from_name => 1} @$connections),
+%   (map {$_->to_name   => 1} @$connections),
+% }};
+% for my $en (@entity_names) {
+%   my $url = url_for 'show_entity', entity_name => $en;
+    g.addNode("<%= quotemeta $en %>", {render: function(raphael, node) {
+        var shape = Graph.Renderer.defaultRenderFunc(raphael, node);
+        shape.dblclick(function() {
+            window.location.href = '<%= $url %>';
+        });
+        return shape;
+    }});
+% }
+
+%# add all edges
 % for my $conn (@$connections) {
     g.addEdge(
         "<%= quotemeta $conn->from_name %>", "<%= quotemeta $conn->to_name %>",

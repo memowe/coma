@@ -1,0 +1,10 @@
+% layout 'default';
+% my $title = 'Entity ' . $entity_name;
+% title $title, breadcrumbs => [
+%   [Overview => 'list_maps'],
+%   [Entities => 'entities'],
+%   $title,
+% ];
+%= t h1 => $title
+
+TODO
