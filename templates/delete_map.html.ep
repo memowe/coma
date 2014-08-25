@@ -1,13 +1,13 @@
 % layout 'default';
 % my $title = 'Delete map ' . $map->name;
 % title $title, breadcrumbs => [
-%   [overview => 'list_maps'],
+%   [Overview => 'list_maps'],
 %   ['Map ' . $map->name, 'show_map'],
-%   'delete',
+%   'Delete',
 % ];
 %= t h1 => $title
 %= t 'hr'
 %= form_for delete_map_sure => begin
     O RLY?
-    %= submit_button 'YA RLY'
+    %= submit_button 'YA RLY!'
 % end

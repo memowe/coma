@@ -1,6 +1,6 @@
 % layout 'default';
 % my $title = 'Overview';
-% title $title, breadcrumbs => ['overview'];
+% title $title, breadcrumbs => ['Overview'];
 %= t h1 => $title
 
 %# list all maps
@@ -15,7 +15,7 @@
 
 %# add a map
 %= t 'hr'
-%= t h2 => 'add a map'
+%= t h2 => 'Add a map'
 %= form_for add_map => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
@@ -25,5 +25,5 @@
             %= text_area description => (rows => 3, cols => 60)
         </td></tr>
     </table>
-    %= submit_button 'add'
+    %= submit_button 'Add'
 % end

@@ -1,6 +1,6 @@
 % layout 'default';
 % my $title = 'Map ' . $map->name;
-% title $title, breadcrumbs => [[overview => 'list_maps'], $title];
+% title $title, breadcrumbs => [[Overview => 'list_maps'], $title];
 %= t h1 => $title
 
 %# map description
@@ -11,7 +11,7 @@
 
 %# visualization container
 %= t 'hr'
-%= t h2 => 'visualization'
+%= t h2 => 'Visualization'
 %= t div => (id => 'canvas')
 
 %# visualize: may the javascript begin
@@ -38,12 +38,12 @@ renderer.draw();
 
 %# enter a connection form
 %= t 'hr'
-%= t h2 => 'new edge →'
+%= t h2 => 'New edge'
 %= form_for 'add_connection' => begin
     %= text_field from => '', id => 'from'
-    %= text_field type => '', id => 'type'
+    &mdash;<%= text_field type => '', id => 'type' %>→
     %= text_field to   => '', id => 'to'
-    %= submit_button 'add connection'
+    %= submit_button 'Add connection'
 % end
 %= javascript begin
 $(function() {
@@ -65,7 +65,7 @@ $(function() {
 
 %# dump connections
 %= t 'hr'
-%= t h2 => 'connections'
+%= t h2 => 'Connections'
 %= t ol => begin
 % for my $conn (@$connections) {
     %= t li => begin
@@ -84,7 +84,7 @@ $(function() {
 
 %# edit meta data
 %= t 'hr'
-%= t h2 => 'edit meta data'
+%= t h2 => 'Edit meta data'
 %= form_for edit_map => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
@@ -94,12 +94,12 @@ $(function() {
             <%= text_area description => (rows => 3, cols => 60) => begin %><%= $map->description =%><% end %>
         </td></tr>
     </table>
-    %= submit_button 'edit'
+    %= submit_button 'Edit'
 % end
 
 %# delete this map?
 %= t 'hr'
-%= t h2 => 'delete this map'
+%= t h2 => 'Delete this map'
 %= form_for delete_map => begin
-    %= submit_button 'do it'
+    %= submit_button 'Do it'
 % end
