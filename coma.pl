@@ -134,6 +134,21 @@ get '/' => sub {
     $c->stash(connections => \@connections);
 } => 'show_map';
 
+# edit map meta data
+post '/edit' => sub {
+    my $c   = shift;
+    my $map = $c->stash('map');
+
+    # update map meta data
+    $map->update(
+        name        => $c->param('name'),
+        description => $c->param('description'),
+    );
+
+    # done
+    $c->redirect_to('show_map');
+} => 'edit_map';
+
 # add a connection
 post '/' => sub {
     my $c = shift;

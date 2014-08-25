@@ -50,9 +50,14 @@ ok defined $foo_map_link, 'foo map found';
 # remember id
 my ($foo_map_id) = $foo_map_link->attr('href') =~ m|map/(\d+)|;
 
+# change name and description
+$t->post_ok("/map/$foo_map_id/edit", form => {
+    name => 'baz', description => 'quux'
+})->text_is(h1 => 'Map baz')->text_is('#description p' => 'quux');
+
 # now delete it
 $t->post_ok("/map/$foo_map_id/delete");
-$t->text_is(h1 => 'Delete map foo');
+$t->text_is(h1 => 'Delete map baz');
 
 # now delete it, really
 $t->post_ok("/map/$foo_map_id/delete_sure");

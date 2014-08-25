@@ -82,6 +82,21 @@ $(function() {
 % }
 % end
 
+%# edit meta data
+%= t 'hr'
+%= t h2 => 'edit meta data'
+%= form_for edit_map => begin
+    <table>
+        <tr><th><%= label_for name => 'name' %></th><td>
+            %= text_field name => (id => 'name', value => $map->name)
+        </td></tr>
+        <tr><th><%= label_for description => 'description' %></th><td>
+            <%= text_area description => (rows => 3, cols => 60) => begin %><%= $map->description =%><% end %>
+        </td></tr>
+    </table>
+    %= submit_button 'edit'
+% end
+
 %# delete this map?
 %= t 'hr'
 %= t h2 => 'delete this map'
