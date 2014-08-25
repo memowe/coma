@@ -21,7 +21,8 @@ my $t = Test::Mojo->new;
 $t->ua->max_redirects(1);
 
 # connection not there yet
-$t->get_ok('/map/1')->content_unlike(qr/Perl isa Programmiersprache/);
+my $text = $t->get_ok('/map/1')->tx->res->dom->all_text;
+unlike $text => qr/Perl isa Programmiersprache/, 'no perl connection';
 
 # add the new connection
 $t->post_ok('/map/1', form => {
@@ -29,7 +30,8 @@ $t->post_ok('/map/1', form => {
 });
 
 # now it's there
-$t->content_like(qr/Perl isa Programmiersprache/);
+$text = $t->tx->res->dom->all_text;
+like $text => qr/Perl isa Programmiersprache/, 'perl connection found';
 
 # delete it
 $t->post_ok('/map/1/delete_connection', form => {
@@ -37,7 +39,8 @@ $t->post_ok('/map/1/delete_connection', form => {
 });
 
 # it's gone again
-$t->get_ok('/map/1')->content_unlike(qr/Perl isa Programmiersprache/);
+$text = $t->get_ok('/map/1')->tx->res->dom->all_text;
+unlike $text => qr/Perl isa Programmiersprache/, 'perl connection gone';
 
 # cleanup
 unlink $ENV{COMA_DB};
