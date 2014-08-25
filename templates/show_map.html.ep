@@ -51,6 +51,18 @@ $(function() {
 });
 % end
 
+%# auto-completion code
+%= javascript begin
+$(function() {
+    $('#from, #to').autocomplete({
+        source: '<%= url_for 'entity_completion' %>',
+    });
+    $('#type').autocomplete({
+        source: '<%= url_for 'connection_completion' %>',
+    });
+});
+% end
+
 %# dump connections
 %= t 'hr'
 %= t h2 => 'connections'
@@ -68,18 +80,6 @@ $(function() {
         % end
     % end
 % }
-% end
-
-%# auto-completion code
-%= javascript begin
-$(function() {
-    $('#from, #to').autocomplete({
-        source: '<%= url_for 'entity_completion' %>',
-    });
-    $('#type').autocomplete({
-        source: '<%= url_for 'connection_completion' %>',
-    });
-});
 % end
 
 %# delete this map?
