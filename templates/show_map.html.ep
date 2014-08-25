@@ -13,8 +13,6 @@
 %= t 'hr'
 %= t h2 => 'visualization'
 %= t div => (id => 'canvas')
-%= t 'br'
-%= t button => (id => 'redraw', onclick => 'redraw()') => 'redraw'
 
 %# visualize: may the javascript begin
 %= javascript begin
@@ -34,11 +32,6 @@ layouter.layout();
 var renderer = new Graph.Renderer.Raphael('canvas', g, 1000, 400);
 renderer.draw();
 
-var redraw = function() {
-    layouter.layout();
-    renderer.draw();
-}
-
 });
 %# end of javascript
 % end
@@ -51,6 +44,11 @@ var redraw = function() {
     %= text_field type => '', id => 'type'
     %= text_field to   => '', id => 'to'
     %= submit_button 'add connection'
+% end
+%= javascript begin
+$(function() {
+    $('#from').focus();
+});
 % end
 
 %# dump connections
