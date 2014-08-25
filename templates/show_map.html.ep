@@ -31,7 +31,7 @@ var g = new Graph();
 %# draw that shizzle
 var layouter = new Graph.Layout.Spring(g);
 layouter.layout();
-var renderer = new Graph.Renderer.Raphael('canvas', g, 800, 400);
+var renderer = new Graph.Renderer.Raphael('canvas', g, 1000, 400);
 renderer.draw();
 
 var redraw = function() {
@@ -42,6 +42,17 @@ var redraw = function() {
 });
 %# end of javascript
 % end
+
+%# enter a connection form
+%= t 'hr'
+%= t h2 => 'new edge →'
+%= form_for 'add_connection' => begin
+    %= text_field from => '', id => 'from'
+    %= text_field type => '', id => 'type'
+    %= text_field to   => '', id => 'to'
+    %= submit_button 'add connection'
+% end
+
 %# dump connections
 %= t 'hr'
 %= t h2 => 'connections'
@@ -52,21 +63,13 @@ var redraw = function() {
             %= hidden_field from => $conn->from_name
             %= hidden_field type => $conn->type
             %= hidden_field to   => $conn->to_name
-            <%= $conn->from_name %> <%= $conn->type %> <%= $conn->to_name %>
+            %= t strong => $conn->from_name
+            %= $conn->type
+            %= t strong => $conn->to_name
             %= submit_button 'x'
         % end
     % end
 % }
-% end
-
-%# enter a connection form
-%= t 'hr'
-%= t h2 => 'new edge →'
-%= form_for 'add_connection' => begin
-    %= text_field from => '', id => 'from'
-    %= text_field type => '', id => 'type'
-    %= text_field to   => '', id => 'to'
-    %= submit_button 'add connection'
 % end
 
 %# auto-completion code
