@@ -9,6 +9,39 @@
     %== markdown $map->description
 % end
 
+%# visualization container
+%= t 'hr'
+%= t h2 => 'visualization'
+%= t div => (id => 'canvas')
+%= t 'br'
+%= t button => (id => 'redraw', onclick => 'redraw()') => 'redraw'
+
+%# visualize: may the javascript begin
+%= javascript begin
+$(function() {
+var g = new Graph();
+
+%# add all edges (adding nodes implicitely)
+% for my $conn (@$connections) {
+    g.addEdge(
+        "<%= quotemeta $conn->from_name %>", "<%= quotemeta $conn->to_name %>",
+        {label: "<%= quotemeta $conn->type %>", directed: true});
+% }
+
+%# draw that shizzle
+var layouter = new Graph.Layout.Spring(g);
+layouter.layout();
+var renderer = new Graph.Renderer.Raphael('canvas', g, 800, 400);
+renderer.draw();
+
+var redraw = function() {
+    layouter.layout();
+    renderer.draw();
+}
+
+});
+%# end of javascript
+% end
 %# dump connections
 %= t 'hr'
 %= t h2 => 'connections'
