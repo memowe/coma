@@ -1,5 +1,5 @@
 % layout 'default';
-% my $title = 'Map overview';
+% my $title = 'Overview';
 % title $title;
 %= t h1 => $title
 
