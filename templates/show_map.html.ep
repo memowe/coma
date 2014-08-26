@@ -86,9 +86,13 @@ $(function() {
             %= hidden_field from => $conn->from_name
             %= hidden_field type => $conn->type
             %= hidden_field to   => $conn->to_name
-            %= t strong => $conn->from_name
+            %= link_to show_entity => {entity_name => $conn->from_name} => begin
+                %= t strong => $conn->from_name
+            % end
             %= $conn->type
-            %= t strong => $conn->to_name
+            %= link_to show_entity => {entity_name => $conn->to_name} => begin
+                %= t strong => $conn->to_name
+            % end
             %= submit_button 'x'
         % end
     % end
