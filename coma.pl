@@ -93,6 +93,7 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub {
     # try to load map
     my $map = $c->db('Map')->find($c->param('map_id'), {
         prefetch => 'connections',
+        order_by => [qw(connections.from_name connections.to_name)],
     });
     $c->render_not_found and return unless $map;
 
