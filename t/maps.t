@@ -8,13 +8,10 @@ use FindBin '$Bin';
 
 # prepare test database
 $ENV{COMA_DB} = "$Bin/graph.sqlite";
-ok ! -e $ENV{COMA_DB}, 'no test database found';
+ok -e $ENV{COMA_DB}, 'test database found';
 
 # get the lite script
 require "$Bin/../coma.pl";
-
-# got a test database?
-ok -e $ENV{COMA_DB}, 'test database found';
 
 # prepare
 my $t = Test::Mojo->new;
@@ -67,9 +64,5 @@ my $map_links3 = $t->tx->res->dom('ul a');
 is $map_links3->size, $map_links1->size, 'one less map';
 $foo_map_link = $map_links3->first(sub { shift->text eq 'foo' });
 ok ! defined $foo_map_link, 'no foo map found';
-
-# cleanup
-unlink $ENV{COMA_DB};
-ok ! -e $ENV{COMA_DB}, 'test database removed';
 
 done_testing;

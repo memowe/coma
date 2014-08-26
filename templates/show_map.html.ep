@@ -21,13 +21,9 @@ $(function() {
 var g = new Graph();
 
 %# add all nodes
-% my @entity_names = keys %{{
-%   (map {$_->from_name => 1} @$connections),
-%   (map {$_->to_name   => 1} @$connections),
-% }};
-% for my $en (@entity_names) {
-%   my $url = url_for 'show_entity', entity_name => $en;
-    g.addNode("<%= quotemeta $en %>", {render: function(raphael, node) {
+% for my $e ($entities->all) {
+%   my $url = url_for 'show_entity', entity_name => $e->name;
+    g.addNode("<%= quotemeta $e->name %>", {render: function(raphael, node) {
         var shape = Graph.Renderer.defaultRenderFunc(raphael, node);
         shape.dblclick(function() {
             window.location.href = '<%= $url %>';
@@ -37,7 +33,7 @@ var g = new Graph();
 % }
 
 %# add all edges
-% for my $conn (@$connections) {
+% for my $conn ($map->connections->all) {
     g.addEdge(
         "<%= quotemeta $conn->from_name %>", "<%= quotemeta $conn->to_name %>",
         {label: "<%= quotemeta $conn->type %>", directed: true});
@@ -84,7 +80,7 @@ $(function() {
 %= t 'hr'
 %= t h2 => 'Connections'
 %= t ol => begin
-% for my $conn (@$connections) {
+% for my $conn ($map->connections->all) {
     %= t li => begin
         %= form_for delete_connection => begin
             %= hidden_field from => $conn->from_name

@@ -1,4 +1,4 @@
 ~*
 .DS_Store
 *.sw[a-p]
-data
+data/graph.sqlite

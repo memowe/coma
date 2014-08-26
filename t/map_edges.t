@@ -8,13 +8,10 @@ use FindBin '$Bin';
 
 # prepare test database
 $ENV{COMA_DB} = "$Bin/graph.sqlite";
-ok ! -e $ENV{COMA_DB}, 'no test database found';
+ok -e $ENV{COMA_DB}, 'no test database found';
 
 # get the lite script
 require "$Bin/../coma.pl";
-
-# got a test database?
-ok -e $ENV{COMA_DB}, 'test database found';
 
 # prepare
 my $t = Test::Mojo->new;
@@ -41,9 +38,5 @@ $t->post_ok('/map/1/delete_connection', form => {
 # it's gone again
 $text = $t->get_ok('/map/1')->tx->res->dom->all_text;
 unlike $text => qr/Perl isa Programmiersprache/, 'perl connection gone';
-
-# cleanup
-unlink $ENV{COMA_DB};
-ok ! -e $ENV{COMA_DB}, 'test database removed';
 
 done_testing;

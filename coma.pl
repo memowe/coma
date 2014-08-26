@@ -1,57 +1,35 @@
 #!/usr/bin/env perl
 
+# prepare db schema auto loading
+$ENV{SCHEMA_LOADER_BACKCOMPAT} = 1;
+package Coma::DB;
+use base 'DBIx::Class::Schema::Loader';
+
+# lite app
+package main;
+
 use Mojolicious::Lite;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
 
-# prepare markdown
+# prepare database access
+my $dbfile = $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite');
+my $schema = Coma::DB->connect("dbi:SQLite:dbname=$dbfile", '', '', {
+    AutoCommit      => 1,
+    RaiseError      => 1,
+    sqlite_unicode  => 1,
+});
+
+# database helper, with argument: that resultset, else: the schema
+helper db => sub {
+    my ($c, $rs) = @_;
+    return $rs ? $schema->resultset($rs) : $schema;
+};
+
+# markdown helper
 helper markdown => sub {
     my ($c, $text) = @_;
     return markdown $text;
-};
-
-# prepare database access
-use ORLite {
-    package     => 'Coma',
-    file        => $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite'),
-    unicode     => 1,
-    create      => sub {
-        my $dbh = shift;
-
-        # create the table for maps
-        $dbh->do('CREATE TABLE map (
-            id          INTEGER PRIMARY KEY,
-            name        STRING,
-            description STRING
-        );');
-
-        # insert a sample map
-        my $insert_map = $dbh->prepare('INSERT INTO map
-            (name, description) VALUES (?, ?)
-        ');
-        $insert_map->execute('Beispiel', 'Eine **Beispiel-Concept-Map**');
-        my $example_map_id = $dbh->last_insert_id((undef) x 4);
-
-        # create the table for connections
-        $dbh->do('CREATE TABLE connection (
-            map_id      INTEGER,
-            from_name   STRING,
-            type        STRING,
-            to_name     STRING,
-            PRIMARY KEY (map_id, from_name, type, to_name),
-            FOREIGN KEY (map_id) REFERENCES map (id)
-        );');
-
-        # insert some example connections
-        my $insert_connection = $dbh->prepare('INSERT INTO connection
-            (map_id, from_name, type, to_name) VALUES (?, ?, ?, ?)
-        ');
-        $insert_connection->execute(@$_) for @{[
-            [$example_map_id, qw(Java isa Programmiersprache)],
-            [$example_map_id, qw(Java has JVM)],
-            [$example_map_id, qw(Programmiersprache isa JVM)],
-        ]};
-    },
 };
 
 # JSON entity completion
@@ -59,19 +37,13 @@ any '/entity_completion' => sub {
     my $c   = shift;
     my $str = $c->param('term') // 'xnorfzt';
 
-    # find matching connections for both from and to part
-    my @fromm   = Coma::Connection->select('WHERE from_name LIKE ?', "%$str%");
-    my @tom     = Coma::Connection->select('WHERE to_name   LIKE ?', "%$str%");
-
-    # unique entity names
-    my %names = (
-        (map {$_->from_name => 1} @fromm),
-        (map {$_->to_name   => 1} @tom),
-    );
-    my @names = keys %names;
+    # find matching entities
+    my @entities = $c->db('Entity')->search({
+        name => {like => "%$str%"},
+    })->all;
 
     # render as json
-    $c->render(json => \@names);
+    $c->render(json => [map $_->name => @entities]);
 };
 
 # JSON connection completion
@@ -79,19 +51,19 @@ any '/connection_completion' => sub {
     my $c   = shift;
     my $str = $c->param('term') // 'xnorfzt';
 
-    # find unique connection types (represented by any connection)
-    my @connections = Coma::Connection->select(
-        'WHERE type LIKE ? GROUP BY type', "%$str%"
-    );
+    # find matching connections
+    my @ctypes = $c->db('ConnectionType')->search({
+        name => {like => "%$str%"},
+    })->all;
 
     # render as json
-    $c->render(json => [map $_->type => @connections]);
+    $c->render(json => [map $_->name => @ctypes]);
 };
 
 # show all maps
 get '/' => sub {
     my $c = shift;
-    $c->stash(maps => [Coma::Map->select]);
+    $c->stash(maps => $c->db('Map'));
 } => 'list_maps';
 
 # add a map
@@ -99,10 +71,10 @@ post '/' => sub {
     my $c = shift;
 
     # create the map
-    my $map = Coma::Map->new(
+    my $map = $c->db('Map')->create({
         name        => $c->param('name'),
         description => $c->param('description'),
-    )->insert;
+    });
 
     # done
     $c->redirect_to('show_map', map_id => $map->id);
@@ -119,8 +91,10 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub {
     my $c = shift;
 
     # try to load map
-    my $map = eval { Coma::Map->load($c->param('map_id')) };
-    $c->render_not_found and return if $@;
+    my $map = $c->db('Map')->find($c->param('map_id'), {
+        prefetch => 'connections',
+    });
+    $c->render_not_found and return unless $map;
 
     # ok, we have a map
     $c->stash(map => $map);
@@ -132,12 +106,11 @@ get '/' => sub {
     my $c   = shift;
     my $map = $c->stash('map');
 
-    # load connections
-    my @connections = Coma::Connection->select(
-        'where map_id = ? order by from_name, to_name',
-        $map->id
-    );
-    $c->stash(connections => \@connections);
+    # load entities (unfortunately no relationship detected)
+    my $entities = $c->db('Entity')->search({map_id => $map->id});
+
+    # done
+    $c->stash(entities => $entities);
 } => 'show_map';
 
 # edit map meta data
@@ -146,10 +119,10 @@ post '/edit' => sub {
     my $map = $c->stash('map');
 
     # update map meta data
-    $map->update(
+    $map->update({
         name        => $c->param('name'),
         description => $c->param('description'),
-    );
+    });
 
     # done
     $c->redirect_to('show_map');
@@ -157,15 +130,15 @@ post '/edit' => sub {
 
 # add a connection
 post '/' => sub {
-    my $c = shift;
+    my $c   = shift;
+    my $map = $c->stash('map');
 
-    # build and insert a new connection
-    my $connection  = Coma::Connection->new(
-        map_id      => $c->stash('map')->id,
+    # insert a new connection for this map
+    $map->create_related('connections', {
         from_name   => trim($c->param('from')),
         type        => trim($c->param('type')),
         to_name     => trim($c->param('to')),
-    )->insert;
+    });
 
     # done
     $c->redirect_to('show_map');
@@ -177,13 +150,14 @@ post '/delete_connection' => sub {
     my $map = $c->stash('map');
 
     # delete all matching connections (<= 1)
-    Coma::Connection->delete_where(
-        'map_id = ? AND from_name = ? AND type = ? AND to_name = ?',
-        $map->id, $c->param('from'), $c->param('type'), $c->param('to'),
-    );
+    $map->delete_related('connections', {
+        from_name   => $c->param('from'),
+        type        => $c->param('type'),
+        to_name     => $c->param('to'),
+    });
 
     # done
-    $c->redirect_to('show_map', map_id => $map->id);
+    $c->redirect_to('show_map');
 };
 
 # delete a map
