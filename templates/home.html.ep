@@ -1,0 +1,49 @@
+% layout 'default';
+% my $title = 'Home';
+% title $title, breadcrumbs => ['Home'];
+%= t h1 => $title
+% my @quotes = (
+%   ['A map is not the territory.', 'Alfred Korzybski'],
+%   ['If one looks at the map of the world, it\'s difficult to find Iraq', 'Vladimir Putin'],
+%   ['Wars of nations are fought to change maps.', 'Muhammad Ali'],
+%   ['In generalizing lies the difficulty of scientific map-making', 'Max Eckert'],
+%   ['We offered a map to people who were trying to overcome a deep private frustration.', 'Umberto Eco'],
+% );
+% my $quote = @quotes[rand @quotes];
+%= t p => (id => 'quote') => begin
+    %= t q => $quote->[0]
+    &mdash;
+    %= t em => $quote->[1]
+% end
+
+%# link to entity cloud
+%= t 'hr'
+%= t h2 => begin
+    %= link_to 'Entity cloud' => 'entities'
+% end
+
+%# list all maps
+%= t 'hr'
+%= t h2 => 'Available maps'
+%= t ul => begin
+% for my $map ($maps->all) {
+    %= t li => begin
+        %= link_to $map->name => 'show_map', {map_id => $map->id}
+    % end
+% }
+% end
+
+%# add a map
+%= t 'hr'
+%= t h2 => 'Add a map'
+%= form_for add_map => begin
+    <table>
+        <tr><th><%= label_for name => 'name' %></th><td>
+            %= text_field name => (id => 'name')
+        </td></tr>
+        <tr><th><%= label_for description => 'description' %></th><td>
+            %= text_area description => (rows => 3, cols => 60)
+        </td></tr>
+    </table>
+    %= submit_button 'Add'
+% end

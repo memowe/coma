@@ -1,7 +1,7 @@
 % layout 'default';
 % my $title = 'Delete map ' . $map->name;
 % title $title, breadcrumbs => [
-%   [Overview => 'list_maps'],
+%   [Home => 'home'],
 %   ['Map ' . $map->name, 'show_map'],
 %   'Delete',
 % ];

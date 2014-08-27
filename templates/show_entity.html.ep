@@ -1,7 +1,7 @@
 % layout 'default';
 % my $title = 'Entity ' . $entity_name;
 % title $title, breadcrumbs => [
-%   [Overview => 'list_maps'],
+%   [Home => 'home'],
 %   [Entities => 'entities'],
 %   $title,
 % ];

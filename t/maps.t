@@ -17,8 +17,8 @@ require "$Bin/../coma.pl";
 my $t = Test::Mojo->new;
 $t->ua->max_redirects(1);
 
-# map overview
-$t->get_ok('/')->text_is(h1 => 'Overview');
+# map home
+$t->get_ok('/')->text_is(h1 => 'Home');
 $t->text_is('ul li:first-child a' => 'Beispiel');
 my $map_url = $t->tx->res->dom->at('ul li:first-child a')->attr('href');
 

@@ -60,11 +60,11 @@ any '/connection_completion' => sub {
     $c->render(json => [map $_->name => @ctypes]);
 };
 
-# show all maps
+# home: show all maps 'n' stuff
 get '/' => sub {
     my $c = shift;
     $c->stash(maps => $c->db('Map'));
-} => 'list_maps';
+} => 'home';
 
 # add a map
 post '/' => sub {
@@ -81,7 +81,10 @@ post '/' => sub {
 } => 'add_map';
 
 # show entity cloud
-get '/entities' => {text => 'TODO'};
+get '/entities' => sub {
+    my $c = shift;
+    $c->stash(degrees => $c->db('DegreeOverall'));
+} => 'entities';
 
 # show entity data
 get '/entity/:entity_name' => 'show_entity';
@@ -172,7 +175,7 @@ post '/delete_sure' => sub {
     $c->stash('map')->delete;
 
     # done
-    $c->redirect_to('list_maps');
+    $c->redirect_to('home');
 } => 'delete_map_sure';
 
 app->start;
