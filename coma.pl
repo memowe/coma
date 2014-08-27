@@ -87,7 +87,30 @@ get '/entities' => sub {
 } => 'entities';
 
 # show entity data
-get '/entity/:entity_name' => 'show_entity';
+get '/entity/:entity_name' => sub {
+    my $c   = shift;
+    my $en  = $c->param('entity_name');
+
+    # try to retrieve entity
+    my $entity = $c->db('Entity')->search({name => $en})->first;
+    return $c->render_not_found unless $entity;
+
+    # get degree
+    my $degree = $entity->degree;
+
+    # get directed degrees
+    my $fd = $c->db('FromDegree')->search({name => $en})->first;
+    my $td = $c->db('ToDegree')->search({name => $en})->first;
+    my $from_degree = $fd ? $fd->from_degree : 0;
+    my $to_degree   = $td ? $td->to_degree : 0;
+
+    # done
+    $c->stash(
+        degree      => $degree,
+        from_degree => $from_degree,
+        to_degree   => $to_degree,
+    );
+} => 'show_entity';
 
 # under here: work on one map
 under '/map/:map_id' => [map_id => qr/\d+/] => sub {

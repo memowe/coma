@@ -26,4 +26,7 @@ like $text => qr/Programmiersprache/, 'found Programmiersprache in the cloud';
 # inspect an entity page
 $t->get_ok('/entity/Java')->text_is(h1 => 'Entity Java');
 
+# degree
+$t->text_is('#degrees' => '2 (in: 0, out: 2)');
+
 done_testing;

@@ -7,4 +7,10 @@
 % ];
 %= t h1 => $title
 
-TODO
+%# degrees
+%= t 'hr'
+%= t p => (id => 'degrees') => begin
+    <%= t strong => begin %>Degree:<% end %>
+    <%= $degree %>
+    (in: <%= $to_degree %>, out: <%= $from_degree %>)
+% end
