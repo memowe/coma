@@ -8,9 +8,9 @@
 
 %# entity cloud, sorted by name
 % use List::Util 'sum';
-% my $total_degree = sum map $_->degree => $degrees->all;
+% my $total_degree = $entities->get_column('degree')->sum;
 %= t div => (id => 'entitycloud') => begin
-    % for my $e (sort {$a->name cmp $b->name} $degrees->all) {
+    % for my $e (sort {$a->name cmp $b->name} $entities->all) {
         % my $font_size = (25 * $e->degree / $total_degree) . 'em';
         % my $style = "font-size: $font_size";
         % my $title = 'degree: ' . $e->degree;

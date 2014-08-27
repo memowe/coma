@@ -83,7 +83,7 @@ post '/' => sub {
 # show entity cloud
 get '/entities' => sub {
     my $c = shift;
-    $c->stash(degrees => $c->db('DegreeOverall'));
+    $c->stash(entities => $c->db('Entity'));
 } => 'entities';
 
 # show entity data
@@ -110,8 +110,8 @@ get '/' => sub {
     my $c   = shift;
     my $map = $c->stash('map');
 
-    # load entities (unfortunately no relationship detected)
-    my $entities = $c->db('Entity')->search({map_id => $map->id});
+    # load entities of this map
+    my $entities = $c->db('MapEntity')->search({map_id => $map->id});
 
     # done
     $c->stash(entities => $entities);
