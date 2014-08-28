@@ -1,29 +1,11 @@
 % layout 'default';
-% my $title = 'Entities';
+% my $title = 'All Entities';
 % title $title, breadcrumbs => [
 %   [Home => 'home'],
 %   'Entities',
 % ];
 %= t h1 => $title
 
-%# entity cloud, sorted by name
-%= t div => (id => 'entitycloud') => begin
-    % for my $e (sort {$a->name cmp $b->name} $entities->all) {
-        % my $pr    = $pagerank->{$e->name};
-        % my $size  = (1 + $pr * 30) . 'em';
-        % my $style = "font-size: $size";
-        % my $title = sprintf 'degree: %d, pagerank: %.3f', $e->degree, $pr;
-        %= link_to show_entity => {entity_name => $e->name} => begin
-            <%= t span => (style => $style, title => $title) => $e->name =%>
-        % end
-    % }
-% end
-%= stylesheet begin
-#entitycloud a {
-    margin          : 0 1em;
-    text-decoration : none;
-}
-#entitycloud a:hover {
-    text-decoration : underline;
-}
-% end
+%= t 'hr'
+%= t h2 => 'Entity cloud'
+%= include 'pagerank';

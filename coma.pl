@@ -157,10 +157,18 @@ get '/' => sub {
     my $map = $c->stash('map');
 
     # load entities of this map
-    my $entities = $c->db('MapEntity')->search({map_id => $map->id});
+    my $entities = $map->map_entities->search_related('entity');
+
+    # calculate reverse pagerank
+    my $pagerank = $c->calculate_pagerank(
+        map [$_->to_name => $_->from_name] => $map->connections->all
+    );
 
     # done
-    $c->stash(entities => $entities);
+    $c->stash(
+        entities => $entities,
+        pagerank => $pagerank,
+    );
 } => 'show_map';
 
 # edit map meta data

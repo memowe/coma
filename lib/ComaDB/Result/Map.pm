@@ -83,6 +83,11 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-08-28 02:01:09
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Rpjt7Y7K7RmFJoHfSSN/2g
 
+__PACKAGE__->has_many('map_entities',
+    'ComaDB::Result::MapEntity',
+    {'foreign.map_id' => 'self.id'},
+    {cascade_copy => 0, cascade_delete => 0},
+);
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
