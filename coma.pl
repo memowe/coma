@@ -33,12 +33,12 @@ any '/entity_completion' => sub {
     my $str = $c->param('term') // 'xnorfzt';
 
     # find matching entities
-    my @entities = $c->db('Entity')->search({
+    my $entities = $c->db('Entity')->search({
         name => {like => "%$str%"},
-    })->all;
+    });
 
     # render as json
-    $c->render(json => [map $_->name => @entities]);
+    $c->render(json => [$entities->get_column('name')->all]);
 };
 
 # JSON connection completion
@@ -47,12 +47,12 @@ any '/connection_completion' => sub {
     my $str = $c->param('term') // 'xnorfzt';
 
     # find matching connections
-    my @ctypes = $c->db('ConnectionType')->search({
+    my $ctypes = $c->db('ConnectionType')->search({
         name => {like => "%$str%"},
-    })->all;
+    });
 
     # render as json
-    $c->render(json => [map $_->name => @ctypes]);
+    $c->render(json => [$ctypes->get_column('name')->all]);
 };
 
 # home: show all maps 'n' stuff
