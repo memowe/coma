@@ -32,7 +32,7 @@ CREATE VIEW map_entity AS
     SELECT map_id, name, SUM(degree) degree
         FROM (
                     SELECT map_id, name, from_degree degree FROM map_from_degree
-            UNION   SELECT map_id, name, to_degree   degree FROM map_to_degree
+        UNION ALL   SELECT map_id, name, to_degree   degree FROM map_to_degree
         )
         GROUP BY map_id, name;
 
