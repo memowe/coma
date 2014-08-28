@@ -4,11 +4,11 @@ TODO
 must have
 ---------
 
-- entity cloud (degree => size, map list)
-- entity pages (neighbours etc., map list)
+-
 
 nice to have
 ------------
 
+- calculate Pagerank of entities
 - join similar entities
 - join similar connections
