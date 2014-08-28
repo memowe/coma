@@ -76,6 +76,10 @@ $(function() {
 });
 % end
 
+%= t 'hr'
+%= t h2 => 'Local entity cloud'
+%= include 'pagerank';
+
 %# dump connections
 %= t 'hr'
 %= t h2 => 'Connections'

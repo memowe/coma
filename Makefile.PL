@@ -11,6 +11,7 @@ WriteMakefile(
         'DBIx::Class::Schema::Loader'   =>  '0.07',
         'Mojolicious'                   =>  '5.32',
         'Text::Markdown'                =>  '1.0',
+        'Graph::Centrality::Pagerank'   =>  '1.05',
     },
     test        => {TESTS => 't/*.t'}
 );

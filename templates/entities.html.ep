@@ -1,30 +1,11 @@
 % layout 'default';
-% my $title = 'Entities';
+% my $title = 'All Entities';
 % title $title, breadcrumbs => [
 %   [Home => 'home'],
 %   'Entities',
 % ];
 %= t h1 => $title
 
-%# entity cloud, sorted by name
-% use List::Util 'sum';
-% my $total_degree = $entities->get_column('degree')->sum;
-%= t div => (id => 'entitycloud') => begin
-    % for my $e (sort {$a->name cmp $b->name} $entities->all) {
-        % my $font_size = (25 * $e->degree / $total_degree) . 'em';
-        % my $style = "font-size: $font_size";
-        % my $title = 'degree: ' . $e->degree;
-        %= link_to show_entity => {entity_name => $e->name} => begin
-            <%= t span => (style => $style, title => $title) => $e->name =%>
-        % end
-    % }
-% end
-%= stylesheet begin
-#entitycloud a {
-    margin          : 0 1em;
-    text-decoration : none;
-}
-#entitycloud a:hover {
-    text-decoration : underline;
-}
-% end
+%= t 'hr'
+%= t h2 => 'Entity cloud'
+%= include 'pagerank';
