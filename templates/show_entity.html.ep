@@ -14,3 +14,38 @@
     <%= $degree %>
     (in: <%= $to_degree %>, out: <%= $from_degree %>)
 % end
+
+%# prepare neighbourhood
+% my $neighbourhood_table = begin
+%   my ($name, $neighbour_entities) = @_;
+    %= t h3 => $name
+    <table class="neighbours">
+        <thead><tr><th>Entity</th><th>Degree</th></tr></thead>
+        <tbody>
+%   for my $e ($neighbour_entities->all) {
+            <tr>
+                <th><%= link_to $e->name => show_entity => {entity_name => $e->name} %></th>
+                <td>
+                    <%= $e->degree %>
+                    (in: <%= $e->to_degrees->get_column('to_degree')->first // 0 %>, out: <%= $e->from_degrees->get_column('from_degree')->first // 0 %>)
+                </th>
+            </tr>
+%   }
+        </tbody>
+    </table>
+% end
+%= stylesheet begin
+table.neighbours {
+    border-spacing: .5ex;
+}
+table.neighbours th, table.neighbours td {
+    border  : thin inset lightgray;
+    padding : .5ex 1em;
+}
+% end
+
+%# neighbourhood
+%= t 'hr'
+%= t h2 => 'Neighbourhood'
+%= $neighbourhood_table->('In', $to_neighbours)
+%= $neighbourhood_table->('Out', $from_neighbours)

@@ -29,4 +29,15 @@ $t->get_ok('/entity/Java')->text_is(h1 => 'Entity Java');
 # degree
 $t->text_is('#degrees' => '2 (in: 0, out: 2)');
 
+# neighbourhood
+my $neighbour_tables = $t->tx->res->dom('.neighbours');
+my $in_table_data = $neighbour_tables->slice(0)->first->find('tbody tr');
+is $in_table_data->size, 0, 'no incoming neighbours';
+my $out_table_data = $neighbour_tables->slice(1)->first->find('tbody tr');
+is $out_table_data->size, 2, 'two outgoing neighbours found';
+my $first_out = $out_table_data->slice(0)->first;
+is $first_out->all_text, 'JVM 2 (in: 2, out: 0)', 'JVM found';
+my $second_out = $out_table_data->slice(1)->first;
+is $second_out->all_text, 'Programmiersprache 2 (in: 1, out: 1)', 'outgoing OK';
+
 done_testing;

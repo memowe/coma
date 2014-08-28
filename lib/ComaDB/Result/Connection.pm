@@ -96,6 +96,15 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-08-28 02:01:09
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5kvEhCEYq4G6hwleaoT0xg
 
+__PACKAGE__->belongs_to('from_entity',
+    'ComaDB::Result::Entity',
+    {'foreign.name' => 'self.from_name'},
+);
+
+__PACKAGE__->belongs_to('to_entity',
+    'ComaDB::Result::Entity',
+    {'foreign.name' => 'self.to_name'},
+);
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

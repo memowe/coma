@@ -97,11 +97,17 @@ get '/entity/:entity_name' => sub {
     my $from_deg = $entity->from_degrees->get_column('from_degree')->sum // 0;
     my $to_deg   = $entity->to_degrees->get_column('to_degree')->sum // 0;
 
+    # get neighbourhood
+    my $from_ent = $entity->from_connections->search_related('to_entity');
+    my $to_ent   = $entity->to_connections->search_related('from_entity');
+
     # done
     $c->stash(
-        degree      => $degree,
-        from_degree => $from_deg,
-        to_degree   => $to_deg,
+        degree          => $degree,
+        from_degree     => $from_deg,
+        to_degree       => $to_deg,
+        from_neighbours => $from_ent,
+        to_neighbours   => $to_ent,
     );
 } => 'show_entity';
 
