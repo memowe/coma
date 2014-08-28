@@ -195,7 +195,9 @@ post '/delete_sure' => sub {
     my $c = shift;
 
     # delete it
-    $c->stash('map')->delete;
+    my $map = $c->stash('map');
+    $map->delete_related('connections');
+    $map->delete;
 
     # done
     $c->redirect_to('home');
