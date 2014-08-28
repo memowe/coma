@@ -51,7 +51,7 @@ renderer.draw();
 
 %# enter a connection form
 %= t 'hr'
-%= t h2 => 'New edge'
+%= t h2 => 'New connection'
 %= form_for 'add_connection' => begin
     %= text_field from => '', id => 'from'
     &mdash;<%= text_field type => '', id => 'type' %>→
