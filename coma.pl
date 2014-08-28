@@ -1,20 +1,15 @@
 #!/usr/bin/env perl
 
-# prepare db schema auto loading
-$ENV{SCHEMA_LOADER_BACKCOMPAT} = 1;
-package Coma::DB;
-use base 'DBIx::Class::Schema::Loader';
-
-# lite app
-package main;
-
 use Mojolicious::Lite;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
 
+use lib app->home->rel_dir('lib');
+use ComaDB;
+
 # prepare database access
 my $dbfile = $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite');
-my $schema = Coma::DB->connect("dbi:SQLite:dbname=$dbfile", '', '', {
+my $schema = ComaDB->connect("dbi:SQLite:dbname=$dbfile", '', '', {
     AutoCommit      => 1,
     RaiseError      => 1,
     sqlite_unicode  => 1,
@@ -99,16 +94,14 @@ get '/entity/:entity_name' => sub {
     my $degree = $entity->degree;
 
     # get directed degrees
-    my $fd = $c->db('FromDegree')->search({name => $en})->first;
-    my $td = $c->db('ToDegree')->search({name => $en})->first;
-    my $from_degree = $fd ? $fd->from_degree : 0;
-    my $to_degree   = $td ? $td->to_degree : 0;
+    my $from_deg = $entity->from_degrees->get_column('from_degree')->sum // 0;
+    my $to_deg   = $entity->to_degrees->get_column('to_degree')->sum // 0;
 
     # done
     $c->stash(
         degree      => $degree,
-        from_degree => $from_degree,
-        to_degree   => $to_degree,
+        from_degree => $from_deg,
+        to_degree   => $to_deg,
     );
 } => 'show_entity';
 
