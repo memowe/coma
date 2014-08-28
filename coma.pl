@@ -3,9 +3,13 @@
 use Mojolicious::Lite;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
+use Graph::Centrality::Pagerank;
 
 use lib app->home->rel_dir('lib');
 use ComaDB;
+
+# signed cookies passphrase (not used ATM)
+app->secrets(['coma sowphen']);
 
 # prepare database access
 my $dbfile = $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite');
@@ -25,6 +29,13 @@ helper db => sub {
 helper markdown => sub {
     my ($c, $text) = @_;
     return markdown $text;
+};
+
+# pagerank helper: expects LoL of vertex names
+my $pr = Graph::Centrality::Pagerank->new();
+helper calculate_pagerank => sub {
+    my ($c, @graph) = @_;
+    return $pr->getPagerankOfNodes(listOfEdges => \@graph);
 };
 
 # JSON entity completion
@@ -78,7 +89,20 @@ post '/' => sub {
 # show entity cloud
 get '/entities' => sub {
     my $c = shift;
-    $c->stash(entities => $c->db('Entity'));
+
+    # load entities (including degree)
+    my $entities = $c->db('Entity');
+
+    # calculate reverse pagerank
+    my $pagerank = $c->calculate_pagerank(
+        map [$_->to_name => $_->from_name] => $c->db('Connection')->all
+    );
+
+    # done
+    $c->stash(
+        entities    => $entities,
+        pagerank    => $pagerank,
+    );
 } => 'entities';
 
 # show entity data
