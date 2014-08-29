@@ -77,7 +77,7 @@ $(function() {
 % end
 
 %= t 'hr'
-%= t h2 => 'Local entity cloud'
+%= t h2 => 'Entity cloud'
 %= include 'pagerank';
 
 %# dump connections
