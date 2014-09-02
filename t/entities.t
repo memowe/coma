@@ -40,4 +40,15 @@ is $first_out->all_text, 'Programmiersprache 0.2597 2 (in: 1, out: 1)', 'Program
 my $second_out = $out_table_data->slice(1)->first;
 is $second_out->all_text, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
 
+# all maps with this entity
+my $map_links = $t->tx->res->dom('ul a');
+is $map_links->size, 2, 'two maps';
+is $map_links->slice(0)->all_text, 'Beispiel', 'Beispiel found';
+is $map_links->slice(1)->all_text, 'Bleistift', 'Bleistift found';
+
+# all maps with entity Programmiersprache
+$map_links = $t->get_ok('/entity/Programmiersprache')->tx->res->dom('ul a');
+is $map_links->size, 1, 'only one map';
+is $map_links->all_text, 'Beispiel', 'Beispiel found';
+
 done_testing;

@@ -67,5 +67,15 @@ __PACKAGE__->has_many('to_degrees',
     {'foreign.name' => 'self.name'},
 );
 
+__PACKAGE__->has_many('connections',
+    'ComaDB::Result::Connection',
+    [
+        {'foreign.from_name'    => 'self.name'},
+        {'foreign.to_name'      => 'self.name'},
+    ],
+);
+
+__PACKAGE__->many_to_many('maps', connections => 'map');
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

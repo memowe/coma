@@ -106,5 +106,10 @@ __PACKAGE__->belongs_to('to_entity',
     {'foreign.name' => 'self.to_name'},
 );
 
+__PACKAGE__->belongs_to('map',
+    'ComaDB::Result::Map',
+    {'foreign.id' => 'self.map_id'},
+);
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

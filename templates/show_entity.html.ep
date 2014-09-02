@@ -22,3 +22,14 @@
 %= include 'entity_list', entities => $to_neighbours
 %= t h3 => 'Out'
 %= include 'entity_list', entities => $from_neighbours
+
+%# list all maps with this entity
+%= t 'hr'
+%= t h2 => 'All maps with this entity'
+%= t ul => begin
+% for my $map ($maps->all) {
+    %= t li => begin
+        %= link_to $map->name => 'show_map', {map_id => $map->id}
+    % end
+% }
+% end

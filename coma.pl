@@ -134,6 +134,9 @@ get '/entity/:entity_name' => sub {
         map [$_->to_name => $_->from_name] => $c->db('Connection')->all
     );
 
+    # find all maps with this entity
+    my $maps = $entity->maps->search(undef, {distinct => 1});
+
     # done
     $c->stash(
         degree          => $degree,
@@ -142,6 +145,7 @@ get '/entity/:entity_name' => sub {
         from_neighbours => $from_ent,
         to_neighbours   => $to_ent,
         pagerank        => $pagerank,
+        maps            => $maps,
     );
 } => 'show_entity';
 
