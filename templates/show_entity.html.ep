@@ -20,5 +20,5 @@
 %= t h2 => 'Neighbourhood'
 %= t h3 => 'In'
 %= include 'entity_list', entities => $to_neighbours
-%= t h3 => 'In'
+%= t h3 => 'Out'
 %= include 'entity_list', entities => $from_neighbours

@@ -80,6 +80,10 @@ $(function() {
 %= t h2 => 'Entity cloud'
 %= include 'pagerank';
 
+%= t 'hr'
+%= t h2 => 'Entities'
+%= include 'entity_list'
+
 %# dump connections
 %= t 'hr'
 %= t h2 => 'Connections'

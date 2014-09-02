@@ -1,15 +1,23 @@
 <table class="neighbours">
-    <thead><tr><th>Entity</th><th>Degree</th></tr></thead>
+    <thead><tr>
+        <th>Entity</th>
+        <th>Reverse Pagerank</th>
+        <th>Degree</th>
+    </tr></thead>
     <tbody>
-%   for my $e ($entities->all) {
+% my @pr_sorted_entities = sort {
+%   $pagerank->{$a->name} <=> $pagerank->{$b->name}
+% } $entities->all;
+% for my $e (reverse @pr_sorted_entities) {
         <tr>
             <th><%= link_to $e->name => show_entity => {entity_name => $e->name} %></th>
+            <td><%= sprintf '%.4f' => $pagerank->{$e->name} %></td>
             <td>
                 <%= $e->degree %>
                 (in: <%= $e->to_degrees->get_column('to_degree')->first // 0 %>, out: <%= $e->from_degrees->get_column('from_degree')->first // 0 %>)
-            </th>
+            </td>
         </tr>
-%   }
+% }
     </tbody>
 </table>
 %= stylesheet begin

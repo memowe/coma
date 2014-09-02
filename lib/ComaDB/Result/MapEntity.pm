@@ -59,5 +59,25 @@ __PACKAGE__->belongs_to('entity',
     {'foreign.name' => 'self.name'},
 );
 
+__PACKAGE__->has_many('from_connections',
+    'ComaDB::Result::Connection',
+    {'foreign.from_name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
+);
+
+__PACKAGE__->has_many('to_connections',
+    'ComaDB::Result::Connection',
+    {'foreign.from_name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
+);
+
+__PACKAGE__->has_many('from_degrees',
+    'ComaDB::Result::MapFromDegree',
+    {'foreign.name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
+);
+
+__PACKAGE__->has_many('to_degrees',
+    'ComaDB::Result::MapToDegree',
+    {'foreign.name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
+);
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

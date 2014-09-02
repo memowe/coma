@@ -122,8 +122,17 @@ get '/entity/:entity_name' => sub {
     my $to_deg   = $entity->to_degrees->get_column('to_degree')->sum // 0;
 
     # get neighbourhood
-    my $from_ent = $entity->from_connections->search_related('to_entity');
-    my $to_ent   = $entity->to_connections->search_related('from_entity');
+    my $from_ent = $entity->from_connections->search_related('to_entity',
+        undef, {distinct => 1}
+    );
+    my $to_ent   = $entity->to_connections->search_related('from_entity',
+        undef, {distinct => 1}
+    );
+
+    # calculate reverse pagerank
+    my $pagerank = $c->calculate_pagerank(
+        map [$_->to_name => $_->from_name] => $c->db('Connection')->all
+    );
 
     # done
     $c->stash(
@@ -132,6 +141,7 @@ get '/entity/:entity_name' => sub {
         to_degree       => $to_deg,
         from_neighbours => $from_ent,
         to_neighbours   => $to_ent,
+        pagerank        => $pagerank,
     );
 } => 'show_entity';
 
@@ -157,7 +167,7 @@ get '/' => sub {
     my $map = $c->stash('map');
 
     # load entities of this map
-    my $entities = $map->map_entities->search_related('entity');
+    my $entities = $map->map_entities;
 
     # calculate reverse pagerank
     my $pagerank = $c->calculate_pagerank(
