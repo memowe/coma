@@ -13,7 +13,7 @@ app->secrets(['coma sowphen']);
 
 # prepare database access
 my $dbfile = $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite');
-my $schema = ComaDB->connect("dbi:SQLite:dbname=$dbfile", '', '', {
+my $schema = ComaDB->connect("dbi:SQLite:$dbfile", '', '', {
     AutoCommit      => 1,
     RaiseError      => 1,
     sqlite_unicode  => 1,

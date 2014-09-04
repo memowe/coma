@@ -18,4 +18,3 @@ cleanup
 
 - DB relationships
 - tests with `->first`
-- `DB->connect` with shorter DSN
