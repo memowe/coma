@@ -47,28 +47,23 @@ __PACKAGE__->add_columns(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-08-28 02:01:09
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EiGRz1aJCnIuVrv+zsRlCQ
 
-__PACKAGE__->has_many('from_connections',
-    'ComaDB::Result::Connection',
+__PACKAGE__->has_many(from_connections => 'ComaDB::Result::Connection',
     {'foreign.from_name' => 'self.name'},
 );
 
-__PACKAGE__->has_many('to_connections',
-    'ComaDB::Result::Connection',
+__PACKAGE__->has_many(to_connections => 'ComaDB::Result::Connection',
     {'foreign.to_name' => 'self.name'},
 );
 
-__PACKAGE__->has_many('from_degrees',
-    'ComaDB::Result::FromDegree',
+__PACKAGE__->has_many(from_degrees => 'ComaDB::Result::FromDegree',
     {'foreign.name' => 'self.name'},
 );
 
-__PACKAGE__->has_many('to_degrees',
-    'ComaDB::Result::ToDegree',
+__PACKAGE__->has_many(to_degrees => 'ComaDB::Result::ToDegree',
     {'foreign.name' => 'self.name'},
 );
 
-__PACKAGE__->has_many('connections',
-    'ComaDB::Result::Connection',
+__PACKAGE__->has_many(connections => 'ComaDB::Result::Connection',
     [
         {'foreign.from_name'    => 'self.name'},
         {'foreign.to_name'      => 'self.name'},

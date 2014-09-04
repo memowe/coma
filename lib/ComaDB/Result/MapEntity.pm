@@ -54,28 +54,23 @@ __PACKAGE__->add_columns(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-08-28 02:01:09
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RgCmC7YNZww63Bq20Tye6Q
 
-__PACKAGE__->belongs_to('entity',
-    'ComaDB::Result::Entity',
+__PACKAGE__->belongs_to(entity => 'ComaDB::Result::Entity',
     {'foreign.name' => 'self.name'},
 );
 
-__PACKAGE__->has_many('from_connections',
-    'ComaDB::Result::Connection',
+__PACKAGE__->has_many(from_connections => 'ComaDB::Result::Connection',
     {'foreign.from_name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
 );
 
-__PACKAGE__->has_many('to_connections',
-    'ComaDB::Result::Connection',
+__PACKAGE__->has_many(to_connections => 'ComaDB::Result::Connection',
     {'foreign.from_name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
 );
 
-__PACKAGE__->has_many('from_degrees',
-    'ComaDB::Result::MapFromDegree',
+__PACKAGE__->has_many(from_degrees => 'ComaDB::Result::MapFromDegree',
     {'foreign.name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
 );
 
-__PACKAGE__->has_many('to_degrees',
-    'ComaDB::Result::MapToDegree',
+__PACKAGE__->has_many(to_degrees => 'ComaDB::Result::MapToDegree',
     {'foreign.name' => 'self.name', 'foreign.map_id' => 'self.map_id'},
 );
 
