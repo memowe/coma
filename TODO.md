@@ -17,4 +17,3 @@ cleanup
 -------
 
 - DB relationships
-- tests with `->first`
