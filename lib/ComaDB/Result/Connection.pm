@@ -111,5 +111,10 @@ __PACKAGE__->belongs_to('map',
     {'foreign.id' => 'self.map_id'},
 );
 
+use overload '""' => sub {
+    my $self = shift;
+    return $self->from_name . ' -' . $self->type . '-> ' . $self->to_name;
+};
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
