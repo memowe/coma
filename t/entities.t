@@ -23,6 +23,16 @@ like $text => qr/JVM/, 'found JVM in the cloud';
 like $text => qr/Java/, 'found Java in the cloud';
 like $text => qr/Programmiersprache/, 'found Programmiersprache in the cloud';
 
+# entity table (sorted by pagerank)
+my $table_data = $t->tx->res->dom('table.neighbours tbody tr');
+is $table_data->size, 3, 'right number of entities found';
+my $first_row = $table_data->slice(0)->all_text;
+is $first_row, 'Java 0.5379 3 (in: 0, out: 3)', 'Java found';
+my $second_row = $table_data->slice(1)->all_text;
+is $second_row, 'Programmiersprache 0.2597 2 (in: 1, out: 1)', 'Programmiersprache found';
+my $third_row = $table_data->slice(2)->all_text;
+is $third_row, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
+
 # inspect an entity page
 $t->get_ok('/entity/Java')->text_is(h1 => 'Entity Java');
 
