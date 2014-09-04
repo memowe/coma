@@ -16,6 +16,6 @@
 <hr>
 %= include 'breadcrumbs'
 <hr>
-<p id="bottom">&copy; <a href="http://www.uni-muenster.de/Informatik.AGVahrenhold/personen/mirkowestermeier.shtml">Mirko Westermeier</a>, <a href="http://www.wwu.de">Westfälische Wilhelms-Universität Münster</a>. Made with <a href="http://www.perl.org">Perl</a> &hearts; <a href="http://mojolicio.us">Mojolicious</a> &hearts; <a href="http://www.sqlite.org">SQLite</a> &hearts; <a href="http://search.cpan.org/dist/ORLite">ORLite</a> &hearts; <a href="http://jquery.com">jQuery</a> (<a href="http://jqueryui.com">UI</a>) &hearts; <a href="http://www.graphdracula.net/">Dracula</a></p>
+<p id="bottom">&copy; <a href="http://www.uni-muenster.de/Informatik.AGVahrenhold/personen/mirkowestermeier.shtml">Mirko Westermeier</a>, <a href="http://www.wwu.de">Westfälische Wilhelms-Universität Münster</a>. Made with <a href="http://www.perl.org">Perl</a> &hearts; <a href="http://mojolicio.us">Mojolicious</a> &hearts; <a href="http://www.sqlite.org">SQLite</a> &hearts; <a href="http://www.dibix-class.org">DBIx::Class</a> &hearts; <a href="http://jquery.com">jQuery</a> (<a href="http://jqueryui.com">UI</a>) &hearts; <a href="http://www.graphdracula.net/">Dracula</a></p>
 </body>
 </html>
