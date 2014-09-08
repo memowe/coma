@@ -249,4 +249,3 @@ post '/delete_sure' => sub {
 } => 'delete_map_sure';
 
 app->start;
-__END__
