@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME        => 'coma',
-    VERSION     => '0.01',
+    VERSION     => '0.1',
     PREREQ_PM   => {
         'DBIx::Class'                   =>  '0.08',
         'DBIx::Class::Schema::Loader'   =>  '0.07',
