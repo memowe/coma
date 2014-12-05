@@ -18,7 +18,8 @@ my $t = Test::Mojo->new;
 $t->ua->max_redirects(1);
 
 # find three things in the entity cloud
-my $text = $t->get_ok('/entities')->tx->res->dom('#entitycloud')->all_text;
+my $entities_res = $t->get_ok('/entities')->tx->res;
+my $text = $entities_res->dom('#entitycloud')->first->all_text;
 like $text => qr/JVM/, 'found JVM in the cloud';
 like $text => qr/Java/, 'found Java in the cloud';
 like $text => qr/Programmiersprache/, 'found Programmiersprache in the cloud';
@@ -26,11 +27,11 @@ like $text => qr/Programmiersprache/, 'found Programmiersprache in the cloud';
 # entity table (sorted by pagerank)
 my $table_data = $t->tx->res->dom('table.neighbours tbody tr');
 is $table_data->size, 3, 'right number of entities found';
-my $first_row = $table_data->slice(0)->all_text;
+my $first_row = $table_data->slice(0)->first->all_text;
 is $first_row, 'Java 0.5379 3 (in: 0, out: 3)', 'Java found';
-my $second_row = $table_data->slice(1)->all_text;
+my $second_row = $table_data->slice(1)->first->all_text;
 is $second_row, 'Programmiersprache 0.2597 2 (in: 1, out: 1)', 'Programmiersprache found';
-my $third_row = $table_data->slice(2)->all_text;
+my $third_row = $table_data->slice(2)->first->all_text;
 is $third_row, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
 
 # inspect an entity page
@@ -53,12 +54,12 @@ is $second_out->all_text, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
 # all maps with this entity
 my $map_links = $t->tx->res->dom('ul a');
 is $map_links->size, 2, 'two maps';
-is $map_links->slice(0)->all_text, 'Beispiel', 'Beispiel found';
-is $map_links->slice(1)->all_text, 'Bleistift', 'Bleistift found';
+is $map_links->slice(0)->first->all_text, 'Beispiel', 'Beispiel found';
+is $map_links->slice(1)->first->all_text, 'Bleistift', 'Bleistift found';
 
 # all maps with entity Programmiersprache
 $map_links = $t->get_ok('/entity/Programmiersprache')->tx->res->dom('ul a');
 is $map_links->size, 1, 'only one map';
-is $map_links->all_text, 'Beispiel', 'Beispiel found';
+is $map_links->map('text')->join(' '), 'Beispiel', 'Beispiel found';
 
 done_testing;

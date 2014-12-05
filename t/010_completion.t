@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use experimental 'smartmatch';
 use Test::More;
 use Test::Mojo;
 use FindBin '$Bin';
