@@ -122,6 +122,13 @@ $(function() {
     %= submit_button 'Edit'
 % end
 
+%# tgf export
+%= t 'hr'
+%= t h2 => 'TGF Export'
+%= form_for tgf_export => begin
+    %= submit_button 'Download'
+%= end
+
 %# delete this map?
 %= t 'hr'
 %= t h2 => 'Delete this map'
