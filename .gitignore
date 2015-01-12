@@ -2,3 +2,4 @@
 .DS_Store
 *.sw[a-p]
 data/graph.sqlite
+t/graph.sqlite
