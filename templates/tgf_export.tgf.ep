@@ -1,6 +1,7 @@
 %# iterate over connections to generate IDs
 % my ($last_id, %id) = (0);
-% for my $conn ($map->connections->all) {
+% my @sorted_conn    = sort {"$a->type" cmp "$b->type"} $map->connections->all;
+% for my $conn (@sorted_conn) {
 %   $id{$_} //= ++$last_id for $conn->from_name, $conn->to_name;
 % }
 %# entities
@@ -9,6 +10,6 @@
 % }
 #
 %# connections
-% for my $conn ($map->connections->all) {
+% for my $conn (@sorted_conn) {
 %== join ' ' => @id{$conn->from_name, $conn->to_name} => $conn->type
 % }
