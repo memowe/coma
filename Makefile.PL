@@ -8,7 +8,6 @@ WriteMakefile(
     VERSION         => '0.1',
     PREREQ_PM       => {
         'DBIx::Class'                   =>  '0.08',
-        'DBIx::Class::Schema::Loader'   =>  '0.07',
         'Mojolicious'                   =>  '5.68',
         'Text::Markdown'                =>  '1.0',
         'Graph::Centrality::Pagerank'   =>  '1.05',
