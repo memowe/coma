@@ -1,23 +1,9 @@
 before_script:
     - perl Makefile.PL
-
-stages:
-    - build
-    - test
-    - cleanup
-
-build_modules:
-    stage: build
-    script:
-        - make
+    - make
 
 run_test_suite:
     stage: test
     script:
         - make test
-
-cleanup_workspace:
-    stage: cleanup
-    when: always
-    script:
         - make realclean
