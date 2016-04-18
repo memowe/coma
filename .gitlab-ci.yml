@@ -1,6 +1,5 @@
 before_script:
     - perl Makefile.PL
-    - make installdeps
 
 stages:
     - build
