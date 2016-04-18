@@ -11,8 +11,6 @@ WriteMakefile(
         'Mojolicious'                   =>  '5.68',
         'Text::Markdown'                =>  '1.0',
         'Graph::Centrality::Pagerank'   =>  '1.05',
-    },
-    TEST_REQUIRES   => {
         'experimental'                  =>  '0.013',
     },
     test            => {TESTS => 't/*.t'}
