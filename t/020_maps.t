@@ -26,8 +26,8 @@ my $map_url = $t->tx->res->dom->at('ul li:first-child a')->attr('href');
 $t->get_ok($map_url)->text_is(h1 => 'Map Beispiel');
 
 # map description (markdown)
-$t->text_is('#description p' => 'Eine');
-$t->text_is('#description p strong' => 'Beispiel-Concept-Map');
+$t->text_like('#description p' => qr/Eine/);
+$t->text_like('#description p strong' => qr/Beispiel-Concept-Map/);
 
 # make sure there's no foo map
 my $map_links1 = $t->get_ok('/')->tx->res->dom('ul a');

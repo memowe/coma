@@ -19,7 +19,7 @@ $t->ua->max_redirects(1);
 
 # connection not there yet
 my $text = $t->get_ok('/map/1')->tx->res->dom->all_text;
-unlike $text => qr/Perl isa Programmiersprache/, 'no perl connection';
+unlike $text => qr/Perl\s+isa\s+Programmiersprache/, 'no perl connection';
 
 # add the new connection
 $t->post_ok('/map/1', form => {
@@ -28,7 +28,7 @@ $t->post_ok('/map/1', form => {
 
 # now it's there
 $text = $t->tx->res->dom->all_text;
-like $text => qr/Perl isa Programmiersprache/, 'perl connection found';
+like $text => qr/Perl\s+isa\s+Programmiersprache/, 'perl connection found';
 
 # delete it
 $t->post_ok('/map/1/delete_connection', form => {
@@ -37,6 +37,6 @@ $t->post_ok('/map/1/delete_connection', form => {
 
 # it's gone again
 $text = $t->get_ok('/map/1')->tx->res->dom->all_text;
-unlike $text => qr/Perl isa Programmiersprache/, 'perl connection gone';
+unlike $text => qr/Perl\s+isa\s+Programmiersprache/, 'perl connection gone';
 
 done_testing;

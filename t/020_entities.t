@@ -28,17 +28,17 @@ like $text => qr/Programmiersprache/, 'found Programmiersprache in the cloud';
 my $table_data = $t->tx->res->dom('table.neighbours tbody tr');
 is $table_data->size, 3, 'right number of entities found';
 my $first_row = $table_data->slice(0)->first->all_text;
-is $first_row, 'Java 0.5379 3 (in: 0, out: 3)', 'Java found';
+like $first_row, qr/Java\s+0.5379\s+3\s+\(in: 0, out: 3\)/, 'Java found';
 my $second_row = $table_data->slice(1)->first->all_text;
-is $second_row, 'Programmiersprache 0.2597 2 (in: 1, out: 1)', 'Programmiersprache found';
+like $second_row, qr/Programmiersprache\s+0.2597\s+2\s+\(in: 1, out: 1\)/, 'Programmiersprache found';
 my $third_row = $table_data->slice(2)->first->all_text;
-is $third_row, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
+like $third_row, qr/JVM\s+0.2024\s+3\s+\(in: 3, out: 0\)/, 'JVM found';
 
 # inspect an entity page
 $t->get_ok('/entity/Java')->text_is(h1 => 'Entity Java');
 
 # degree
-$t->text_is('#degrees' => '3 (in: 0, out: 3)');
+$t->text_like('#degrees' => qr/3\s+\(in: 0, out: 3\)/);
 
 # neighbourhood
 my $neighbour_tables = $t->tx->res->dom('.neighbours');
@@ -47,9 +47,9 @@ is $in_table_data->size, 0, 'no incoming neighbours';
 my $out_table_data = $neighbour_tables->slice(1)->first->find('tbody tr');
 is $out_table_data->size, 2, 'two outgoing neighbours found';
 my $first_out = $out_table_data->slice(0)->first;
-is $first_out->all_text, 'Programmiersprache 0.2597 2 (in: 1, out: 1)', 'Programmiersprache found';
+like $first_out->all_text, qr/Programmiersprache\s+0.2597\s+2\s+\(in: 1, out: 1\)/, 'Programmiersprache found';
 my $second_out = $out_table_data->slice(1)->first;
-is $second_out->all_text, 'JVM 0.2024 3 (in: 3, out: 0)', 'JVM found';
+like $second_out->all_text, qr/JVM\s+0.2024\s+3\s+\(in: 3, out: 0\)/, 'JVM found';
 
 # all maps with this entity
 my $map_links = $t->tx->res->dom('ul a');

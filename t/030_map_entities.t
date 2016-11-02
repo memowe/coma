@@ -27,10 +27,12 @@ my $entity_table = $t->tx->res->dom->at('.neighbours');
 my $out_table_data = $entity_table->find('tbody tr');
 is $out_table_data->size, 3, 'two outgoing neighbours found';
 my $first_out = $out_table_data->slice(0)->first;
-is $first_out->all_text, 'Java 0.5209 2 (in: 0, out: 2)', 'Java found';
+like $first_out->all_text, qr/Java\s+0.5209\s+2\s+\(in: 0, out: 2\)/,
+    'Java found';
 my $second_out = $out_table_data->slice(1)->first;
-is $second_out->all_text, 'Programmiersprache 0.2816 2 (in: 1, out: 1)', 'Programmiersprache found';
+like $second_out->all_text, qr/Programmiersprache\s+0.2816\s+2\s+\(in: 1, out: 1\)/, 'Programmiersprache found';
 my $third_out = $out_table_data->slice(2)->first;
-is $third_out->all_text, 'JVM 0.1976 2 (in: 2, out: 0)', 'JVM found';
+like $third_out->all_text, qr/JVM\s+0.1976\s+2\s+\(in: 2, out: 0\)/,
+    'JVM found';
 
 done_testing;
