@@ -1,5 +1,6 @@
 ~*
 .DS_Store
 *.sw[a-p]
+Makefile.old
 data/graph.sqlite
 t/graph.sqlite
