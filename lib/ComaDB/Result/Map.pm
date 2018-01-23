@@ -88,4 +88,34 @@ __PACKAGE__->has_many(map_entities => 'ComaDB::Result::MapEntity',
 );
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub to_tgf {
+    my $self = shift;
+
+    # prepare
+    my $output = "";
+
+    # collect all entities
+    my %entity_id   = ();
+    my $last_id     = 0;
+    $entity_id{$_}  = ++$last_id
+        for sort $self->map_entities->get_column('name')->all;
+
+    # write entities
+    $output .= "$entity_id{$_} $_\n"
+        for sort keys %entity_id;
+
+    # write entity connection separator
+    $output .= "#\n";
+
+    # write connections
+    for my $c ($self->connections->all) {
+        my ($from, $to, $name) = map {$c->$_} qw(from_name to_name type);
+        $output .= "$entity_id{$from} $entity_id{$to} $name\n";
+    }
+
+    # done
+    return $output;
+}
+
 1;
