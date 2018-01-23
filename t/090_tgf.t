@@ -12,7 +12,7 @@ $ENV{COMA_DB} = "$Bin/graph.sqlite";
 ok -e $ENV{COMA_DB}, 'test database found';
 
 # get the lite script
-require "$Bin/../coma.pl";
+require "$Bin/../coma";
 
 # prepare webapp tester
 my $t = Test::Mojo->new;
