@@ -24,13 +24,13 @@ $t->header_is('Content-Disposition' => 'attachment; filename=Beispiel.tgf');
 
 # check the exported TGF data
 $t->content_is(<<'TGF1');
-1 Java
-2 JVM
+1 JVM
+2 Java
 3 Programmiersprache
 #
-1 2 has
-1 3 isa
-3 2 isa
+2 1 has
+2 3 isa
+3 1 isa
 TGF1
 
 # prepare some TGF data
