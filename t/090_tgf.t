@@ -55,8 +55,8 @@ my ($temp_fh, $temp_fn) = tempfile('test_XXXXX',
 );
 print $temp_fh $tgf_data;
 
-# import 
-my $output = `COMA_DB=$ENV{COMA_DB} echo "$temp_fn" | perl $Bin/../import_tgf_files.pl`;
+# import
+my $output = `COMA_DB=$ENV{COMA_DB} echo "$temp_fn" | perl $Bin/../script/import_tgf_files.pl`;
 like $output, qr/3 concepts and 2 links \(0 duplicates\)/, 'right output';
 
 # find this map
