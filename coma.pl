@@ -4,15 +4,16 @@ use Mojolicious::Lite;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
 use Graph::Centrality::Pagerank;
+use FindBin '$Bin';
 
-use lib app->home->rel_dir('lib');
+use lib "$Bin/lib";
 use ComaDB;
 
 # signed cookies passphrase (not used ATM)
 app->secrets(['coma sowphen']);
 
 # prepare database access
-my $dbfile = $ENV{COMA_DB} // app->home->rel_file('data/graph.sqlite');
+my $dbfile = $ENV{COMA_DB} // "$Bin/data/graph.sqlite";
 my $schema = ComaDB->connect("dbi:SQLite:$dbfile", '', '', {
     AutoCommit      => 1,
     RaiseError      => 1,
