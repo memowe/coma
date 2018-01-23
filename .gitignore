@@ -4,3 +4,6 @@
 Makefile.old
 data/graph.sqlite
 t/graph.sqlite
+
+# exported graph representation files
+export/*.tgf
