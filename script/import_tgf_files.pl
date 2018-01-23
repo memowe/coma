@@ -5,14 +5,14 @@ use warnings;
 use feature 'say';
 
 use FindBin '$Bin';
-use lib "$Bin/lib";
+use lib "$Bin/../lib";
 use ComaDB;
 
 # no log caching
 $| = 42;
 
 # connect to database
-my $dbfile = $ENV{COMA_DB} // "$Bin/data/graph.sqlite";
+my $dbfile = $ENV{COMA_DB} // "$Bin/../data/graph.sqlite";
 my $schema = ComaDB->connect("dbi:SQLite:$dbfile", '', '', {
     AutoCommit      => 1,
     RaiseError      => 1,
@@ -44,7 +44,7 @@ while (defined(my $filename = <STDIN>)) {
         # first section: concepts like "12345 foo"
         if ($concept_section and /^(\d+) (.*)/) {
             $concept{$1} = $2;
-        } 
+        }
 
         # second section: links like "23456 34567 bar"
         if ($link_section and /^(\d+) (\d+) (.*)/) {
