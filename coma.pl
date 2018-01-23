@@ -253,7 +253,7 @@ post '/delete_sure' => sub {
 app->types->type(tgf => 'text/plain;charset=UTF-8');
 get '/tgf_export' => sub {
     my $c = shift;
-    
+
     # force download
     my $fn = $c->stash('map')->name . '.tgf';
     $c->res->headers->content_disposition("attachment; filename=$fn");
