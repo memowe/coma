@@ -12,7 +12,9 @@ coma
 
 ## Data / App Separation
 
-This app is about web-based concept map handling and analysis only. The [Data Collection](/memowe/coma/wikis/Data-Collection) has its own page in the project wiki.
+This app is about web-based concept map handling and analysis only. The [Data Collection][data] has its own page in the project wiki.
+
+[data]: https://algo-git.uni-muenster.de/memowe/coma/wikis/Data-Collection
 
 ## Author and License
 
