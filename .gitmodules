@@ -1,0 +1,3 @@
+[submodule "EventStore-Tiny"]
+	path = EventStore-Tiny
+	url = git@github.com:memowe/EventStore-Tiny.git
