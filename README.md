@@ -1,7 +1,7 @@
-coma
-====
+# coma
 
-**A web-based concept map tool**
+**A web-based concept map tool**  
+[![build status](https://algo-git.uni-muenster.de/memowe/coma/badges/master/build.svg)](https://algo-git.uni-muenster.de/memowe/coma/commits/master)
 
 ## Features
 
