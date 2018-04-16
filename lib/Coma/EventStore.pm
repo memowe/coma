@@ -69,5 +69,10 @@ sub init {
     });
 }
 
+sub state {
+    my $self = shift;
+    return $self->_est->snapshot->state;
+}
+
 1;
 __END__
