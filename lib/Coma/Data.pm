@@ -50,6 +50,24 @@ sub add_map {
     });
 }
 
+sub get_map_data {
+    my ($self, $id) = @_;
+
+    # Exists?
+    my $map = $self->_get('maps')->{$id};
+    die "Unknown map: $id\n" unless defined $map;
+
+    # found
+    return $map;
+}
+
+sub get_all_map_ids {
+    my $self = shift;
+
+    my @ids = keys %{$self->_get('maps')};
+    return [sort {$a <=> $b} @ids];
+}
+
 sub update_map_data {
     my ($self, $id, $data) = @_;
 
