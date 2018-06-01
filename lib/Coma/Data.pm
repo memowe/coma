@@ -1,11 +1,11 @@
 package Coma::Data;
 use Mojo::Base -base;
 
-use Coma::EventStore;
+use Coma::Data::EventStore;
 
 use List::Util 'max';
 
-has events => sub { Coma::EventStore->new };
+has events => sub { Coma::Data::EventStore->new };
 
 sub _get {
     my ($self, $key) = @_;

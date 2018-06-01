@@ -1,4 +1,4 @@
-package Coma::EventStore;
+package Coma::Data::EventStore;
 use Mojo::Base -base;
 
 use FindBin;
