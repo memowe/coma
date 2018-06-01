@@ -21,7 +21,7 @@ sub _generate_map_id {
 
     # Look for the highest given map ID
     # or set it to -1, if nothing found
-    my @keys = keys %{$self->_get('maps')};
+    my @keys = keys %{$self->_get('maps') // {}};
     my $max  = max(@keys) // -1;
 
     # Next ID
