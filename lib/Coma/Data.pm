@@ -42,12 +42,15 @@ sub add_map {
     # Prepare
     my $id = $self->_generate_map_id;
 
-    # Done
+    # Store event
     $self->events->store_event(MapAdded => {
         id          => $id,
         name        => $data->{name},
         description => $data->{description},
     });
+
+    # Done
+    return $id;
 }
 
 sub get_map_data {
@@ -103,7 +106,7 @@ sub add_connection {
     # Prepare
     my $id = $self->_generate_connection_id($map_id);
 
-    # Done
+    # Store event
     $self->events->store_event(ConnectionAdded => {
         id      => $id,
         map     => $map_id,
@@ -111,6 +114,9 @@ sub add_connection {
         from    => $data->{from},
         to      => $data->{to},
     });
+
+    # Done
+    return $id;
 }
 
 sub update_connection {
