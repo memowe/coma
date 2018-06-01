@@ -19,6 +19,9 @@ has _est => sub {
     return $store;
 };
 
+# Helper
+sub store_event {shift->_est->store_event(@_)}
+
 sub init {
     my $self = shift;
 
