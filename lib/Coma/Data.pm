@@ -5,7 +5,11 @@ use Coma::Data::EventStore;
 
 use List::Util 'max';
 
-has events => sub { Coma::Data::EventStore->new };
+has events => sub {
+    my $events = Coma::Data::EventStore->new;
+    $events->init;
+    return $events;
+};
 
 sub _get {
     my ($self, $key) = @_;
