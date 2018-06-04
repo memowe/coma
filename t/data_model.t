@@ -143,6 +143,20 @@ subtest 'Connection handling' => sub {
     };
 };
 
+subtest 'Data extraction' => sub {
+
+    # Preparation
+    my $map_id = $model->add_map({name => 'foo', description => 'bar'});
+    $model->add_connection($map_id, {from => 'X', type => 'and', to => 'Y'});
+    $model->add_connection($map_id, {from => 'WTF', type => 'yo', to => 'X'});
+
+    # Check sorted entity list
+    subtest 'Entity listing' => sub {
+        is_deeply $model->get_map_entities($map_id) => [qw(WTF X Y)],
+            'Correct map entities';
+    };
+};
+
 done_testing;
 
 __END__
