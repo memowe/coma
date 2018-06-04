@@ -8,6 +8,9 @@ use Test::More;
 use_ok 'Coma::Data';
 my $model = Coma::Data->new;
 
+# Disable event logging for tests as events are tested in EventStore::Tiny
+$model->events->_est->logger(undef);
+
 # Global test data
 my $map_id;
 

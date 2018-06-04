@@ -21,6 +21,7 @@ has _est => sub {
 
 # Helper
 sub store_event {shift->_est->store_event(@_)}
+sub logger {shift->_est->logger(@_)}
 
 sub init {
     my $self = shift;
