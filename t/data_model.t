@@ -64,6 +64,22 @@ subtest 'Update map' => sub {
     }, 'Retrieved map data is correct';
 };
 
+subtest 'Remove map' => sub {
+
+    # Remember map data
+    my $map_data = $model->get_map_data($map_id);
+
+    # Delete it from the model
+    $model->remove_map($map_id);
+    is_deeply $model->get_all_map_ids => [], 'No maps left';
+
+    # "Undo" removal
+    delete $map_data->{id};
+    $map_id = $model->add_map($map_data);
+    is_deeply $model->get_map_data($map_id) => {%$map_data, id => $map_id},
+        'Map removal undone';
+};
+
 # TODO
 
 done_testing;
