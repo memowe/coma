@@ -15,13 +15,21 @@ $model->events->_est->logger(undef);
 my $map_id;
 
 subtest 'Add map' => sub {
+
+    # Add
     $map_id = $model->add_map({name => 'foo', description => 'bar'});
+
+    # Check generated ID
     ok defined($map_id), 'Generated ID is defined';
     like $map_id => qr/^\d+$/, 'Generated ID is a number';
 };
 
 subtest 'Load map' => sub {
+
+    # Retrieve the only map
     my $data = $model->get_map_data($map_id);
+
+    # Check the only map's data
     ok defined($data), 'Retrieved data is defined';
     is_deeply $data => {
         name        => 'foo',
