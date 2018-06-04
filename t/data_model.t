@@ -41,6 +41,29 @@ subtest 'Load maps' => sub {
     }, 'Retrieved map data is correct';
 };
 
+subtest 'Update map' => sub {
+
+    # Update the only map
+    $model->update_map_data($map_id, {
+        name        => 'baz',
+        description => 'quux',
+    });
+
+    # Check map list
+    is_deeply $model->get_all_map_ids => [$map_id], 'Map ID list unchanged';
+
+    # Retrieve the only map
+    my $data = $model->get_map_data($map_id);
+
+    # Check its data
+    ok defined($data), 'Retrieved data is defined';
+    is_deeply $data => {
+        name        => 'baz',
+        description => 'quux',
+        id          => $map_id,
+    }, 'Retrieved map data is correct';
+};
+
 # TODO
 
 done_testing;
