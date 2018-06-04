@@ -24,7 +24,10 @@ subtest 'Add map' => sub {
     like $map_id => qr/^\d+$/, 'Generated ID is a number';
 };
 
-subtest 'Load map' => sub {
+subtest 'Load maps' => sub {
+
+    # List all maps
+    is_deeply $model->get_all_map_ids => [$map_id], 'Correct map ID list';
 
     # Retrieve the only map
     my $data = $model->get_map_data($map_id);
