@@ -14,70 +14,74 @@ $model->events->_est->logger(undef);
 # Global test data
 my $map_id;
 
-subtest 'Add map' => sub {
+subtest 'Map handling' => sub {
 
-    # Add
-    $map_id = $model->add_map({name => 'foo', description => 'bar'});
+    subtest Create => sub {
 
-    # Check generated ID
-    ok defined($map_id), 'Generated ID is defined';
-    like $map_id => qr/^\d+$/, 'Generated ID is a number';
-};
+        # Add
+        $map_id = $model->add_map({name => 'foo', description => 'bar'});
 
-subtest 'Load maps' => sub {
+        # Check generated ID
+        ok defined($map_id), 'Generated ID is defined';
+        like $map_id => qr/^\d+$/, 'Generated ID is a number';
+    };
 
-    # List all maps
-    is_deeply $model->get_all_map_ids => [$map_id], 'Correct map ID list';
+    subtest Read => sub {
 
-    # Retrieve the only map
-    my $data = $model->get_map_data($map_id);
+        # List all maps
+        is_deeply $model->get_all_map_ids => [$map_id], 'Correct map ID list';
 
-    # Check the only map's data
-    ok defined($data), 'Retrieved data is defined';
-    is_deeply $data => {
-        name        => 'foo',
-        description => 'bar',
-        id          => $map_id,
-    }, 'Retrieved map data is correct';
-};
+        # Retrieve the only map
+        my $data = $model->get_map_data($map_id);
 
-subtest 'Update map' => sub {
+        # Check the only map's data
+        ok defined($data), 'Retrieved data is defined';
+        is_deeply $data => {
+            name        => 'foo',
+            description => 'bar',
+            id          => $map_id,
+        }, 'Retrieved map data is correct';
+    };
 
-    # Update the only map
-    $model->update_map_data($map_id, {
-        name        => 'baz',
-        description => 'quux',
-    });
+    subtest Update => sub {
 
-    # Check map list
-    is_deeply $model->get_all_map_ids => [$map_id], 'Map ID list unchanged';
+        # Update the only map
+        $model->update_map_data($map_id, {
+            name        => 'baz',
+            description => 'quux',
+        });
 
-    # Retrieve the only map
-    my $data = $model->get_map_data($map_id);
+        # Check map list
+        is_deeply $model->get_all_map_ids => [$map_id],
+            'Map ID list unchanged';
 
-    # Check its data
-    ok defined($data), 'Retrieved data is defined';
-    is_deeply $data => {
-        name        => 'baz',
-        description => 'quux',
-        id          => $map_id,
-    }, 'Retrieved map data is correct';
-};
+        # Retrieve the only map
+        my $data = $model->get_map_data($map_id);
 
-subtest 'Remove map' => sub {
+        # Check its data
+        ok defined($data), 'Retrieved data is defined';
+        is_deeply $data => {
+            name        => 'baz',
+            description => 'quux',
+            id          => $map_id,
+        }, 'Retrieved map data is correct';
+    };
 
-    # Remember map data
-    my $map_data = $model->get_map_data($map_id);
+    subtest Delete => sub {
 
-    # Delete it from the model
-    $model->remove_map($map_id);
-    is_deeply $model->get_all_map_ids => [], 'No maps left';
+        # Remember map data
+        my $map_data = $model->get_map_data($map_id);
 
-    # "Undo" removal
-    delete $map_data->{id};
-    $map_id = $model->add_map($map_data);
-    is_deeply $model->get_map_data($map_id) => {%$map_data, id => $map_id},
-        'Map removal undone';
+        # Delete it from the model
+        $model->remove_map($map_id);
+        is_deeply $model->get_all_map_ids => [], 'No maps left';
+
+        # "Undo" removal
+        delete $map_data->{id};
+        $map_id = $model->add_map($map_data);
+        is_deeply $model->get_map_data($map_id),
+            {%$map_data, id => $map_id}, 'Map removal undone';
+    };
 };
 
 # TODO
