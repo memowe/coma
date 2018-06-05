@@ -146,14 +146,27 @@ subtest 'Connection handling' => sub {
 subtest 'Data extraction' => sub {
 
     # Preparation
-    my $map_id = $model->add_map({name => 'foo', description => 'bar'});
-    $model->add_connection($map_id, {from => 'X', type => 'and', to => 'Y'});
-    $model->add_connection($map_id, {from => 'WTF', type => 'yo', to => 'X'});
+    $model->remove_map($_) for @{$model->get_all_map_ids};
+    my $map1 = $model->add_map({name => 'foo', description => 'bar'});
+    $model->add_connection($map1, {from => 'X', type => 'and', to => 'Y'});
+    $model->add_connection($map1, {from => 'WTF', type => 'yo', to => 'X'});
+    my $map2 = $model->add_map({name => 'baz', description => 'quux'});
+    $model->add_connection($map2, {from => 'WTF', type => 'and', to => 'Y'});
+    $model->add_connection($map2, {from => 'M', type => 'to', to => 'W'});
 
-    # Check sorted entity list
     subtest 'Entity listing' => sub {
-        is_deeply $model->get_map_entities($map_id) => [qw(WTF X Y)],
-            'Correct map entities';
+
+        subtest 'Per map' => sub {
+            is_deeply $model->get_entities($map1) => [qw(WTF X Y)],
+                'Correct first map entities';
+            is_deeply $model->get_entities($map2) => [qw(M W WTF Y)],
+                'Correct second map entities';
+        };
+
+        subtest 'Across all maps' => sub {
+            is_deeply $model->get_entities => [qw(M W WTF X Y)],
+                'Correct entities';
+        };
     };
 };
 

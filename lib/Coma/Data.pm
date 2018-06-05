@@ -155,16 +155,28 @@ sub remove_connection {
     });
 }
 
-sub get_map_entities {
-    my ($self, $map_id) = @_;
+# Per map or across all maps
+sub get_entities {
+    my ($self, $map_id) = @_; # map_id: optional
 
-    # Exists?
-    my $map = $self->_get('maps')->{$map_id};
-    die "Unknown map: $map_id\n" unless defined $map;
+    # Prepare search space
+    my @map_ids;
+    if (defined $map_id) { # Single map
+        die "Unknown map: $map_id\n"
+            unless exists $self->_get('maps')->{$map_id};
+        @map_ids = ($map_id);
+    }
+    else { # All maps
+        @map_ids = @{$self->get_all_map_ids};
+    }
 
-    # Collect without duplicates
-    my @from = map {$_->{from}} values %{$map->{connections}};
-    my @to   = map {$_->{to}}   values %{$map->{connections}};
+    # Collect from in and out connections from all maps
+    my (@from, @to);
+    for my $id (@map_ids) {
+        my $map = $self->_get('maps')->{$id};
+        push @from, map {$_->{from}} values %{$map->{connections}};
+        push @to,   map {$_->{to}}   values %{$map->{connections}};
+    }
 
     # No duplicates (standard idiom to use unique hash keys)
     my @entities = keys %{{ map {$_ => 1} @from, @to }};
