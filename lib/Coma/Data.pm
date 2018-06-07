@@ -156,33 +156,54 @@ sub remove_connection {
 }
 
 # Per map or across all maps
-sub get_entities {
+# Returns a hash with entites as keys and degree as values
+sub get_entity_degrees {
     my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('both', $map_id);
+}
+sub get_entity_indegrees {
+    my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('to', $map_id);
+}
+sub get_entity_outdegrees {
+    my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('from', $map_id);
+}
 
-    # Prepare search space
-    my @map_ids;
-    if (defined $map_id) { # Single map
-        die "Unknown map: $map_id\n"
-            unless exists $self->_get('maps')->{$map_id};
-        @map_ids = ($map_id);
-    }
-    else { # All maps
-        @map_ids = @{$self->get_all_map_ids};
+sub _get_entity_degrees {
+    my ($self, $type, $map_id) = @_; # map_id: optional
+    my @maps;
+
+    # Single map
+    if (defined $map_id) {
+        my $map = $self->_get('maps')->{$map_id};
+        die "Unknown map: $map_id\n" unless defined $map;
+        push @maps, $map;
     }
 
-    # Collect from in and out connections from all maps
-    my (@from, @to);
-    for my $id (@map_ids) {
-        my $map = $self->_get('maps')->{$id};
-        push @from, map {$_->{from}} values %{$map->{connections}};
-        push @to,   map {$_->{to}}   values %{$map->{connections}};
+    # All maps
+    else {
+        @maps = map {$self->_get('maps')->{$_}} @{$self->get_all_map_ids};
     }
 
-    # No duplicates (standard idiom to use unique hash keys)
-    my @entities = keys %{{ map {$_ => 1} @from, @to }};
+    # Count connections for each matching map
+    my %degree;
+    for my $map (@maps) {
+
+        # Look at each connection
+        for my $con (values %{$map->{connections}}) {
+            $degree{$con->{from}}++ if $type eq 'from' or $type eq 'both';
+            $degree{$con->{to}}++   if $type eq 'to'   or $type eq 'both';
+        }
+    }
 
     # Done
-    return [sort @entities];
+    return \%degree;
+}
+
+sub get_entities {
+    my ($self, $map_id) = @_; # map_id: optional
+    return [sort keys %{$self->get_entity_degrees($map_id)}];
 }
 
 1;

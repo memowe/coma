@@ -34,6 +34,62 @@ subtest 'Entity listing' => sub {
     };
 };
 
+subtest 'Entity degrees' => sub {
+
+    subtest 'Indegree' => sub {
+
+        subtest 'Per map' => sub {
+            is_deeply $model->get_entity_indegrees($map1) => {
+                X => 1, Y => 1,
+            }, 'Correct first map indegree entities';
+            is_deeply $model->get_entity_indegrees($map2) => {
+                W => 1, Y => 1,
+            }, 'Correct second map indegree entities';
+        };
+
+        subtest 'Global' => sub {
+            is_deeply $model->get_entity_indegrees => {
+                W => 1, X => 1, Y => 2,
+            }, 'Correct indegree entities';
+        };
+    };
+
+    subtest 'Outdegree' => sub {
+        subtest 'Per map' => sub {
+            is_deeply $model->get_entity_outdegrees($map1) => {
+                WTF => 1, X => 1,
+            }, 'Correct first map outdegree entities';
+            is_deeply $model->get_entity_outdegrees($map2) => {
+                M => 1, WTF => 1,
+            }, 'Correct second map outdegree entities';
+        };
+
+        subtest 'Global' => sub {
+            is_deeply $model->get_entity_outdegrees => {
+                M => 1, WTF => 2, X => 1,
+            }, 'Correct outdegree entities';
+        };
+    };
+
+    subtest 'Combined' => sub {
+
+        subtest 'Per map' => sub {
+            is_deeply $model->get_entity_degrees($map1) => {
+                WTF => 1, X => 2, Y => 1,
+            }, 'Correct first map entities';
+            is_deeply $model->get_entity_degrees($map2) => {
+                M => 1, W => 1, WTF => 1, Y => 1,
+            }, 'Correct second map entities';
+        };
+
+        subtest 'Across all maps' => sub {
+            is_deeply $model->get_entity_degrees => {
+                M => 1, W => 1, WTF => 2, X => 2, Y => 2,
+            }, 'Correct entities';
+        };
+    };
+};
+
 done_testing;
 
 __END__
