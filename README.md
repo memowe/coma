@@ -2,6 +2,7 @@
 
 **A web-based concept map tool**  
 [![build status](https://algo-git.uni-muenster.de/memowe/coma/badges/master/build.svg)](https://algo-git.uni-muenster.de/memowe/coma/commits/master)
+[![Build Status](https://travis-ci.org/memowe/coma.svg?branch=master)](https://travis-ci.org/memowe/coma)
 
 ## Features
 
