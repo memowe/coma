@@ -213,5 +213,23 @@ sub get_entities {
     return [sort keys %{$self->get_entity_degrees($map_id)}];
 }
 
+sub get_connection_types {
+    my ($self, $map_id) = @_; # map_id: optional
+
+    # Collect connection types (with duplicates
+    my @types;
+    for my $map (@{$self->_get_maps($map_id)}) {
+        my @map_connections = values %{$map->{connections}};
+        push @types, map {$_->{type}} @map_connections;
+    }
+
+    # Sum occurrences
+    my %type_count;
+    $type_count{$_}++ for @types;
+
+    # Done
+    return \%type_count;
+}
+
 1;
 __END__
