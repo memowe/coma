@@ -90,6 +90,24 @@ subtest 'Entity degrees' => sub {
     };
 };
 
+subtest 'Connection types' => sub {
+
+    subtest 'Per map' => sub {
+        is_deeply $model->get_connection_types($map1) => {
+            and => 1, yo => 1,
+        }, 'Correct types and occurrences';
+        is_deeply $model->get_connection_types($map2) => {
+            and => 1, to => 1,
+        }, 'Correct types and occurrences';
+    };
+
+    subtest 'Global' => sub {
+        is_deeply $model->get_connection_types => {
+            and => 2, to => 1, yo => 1,
+        }, 'Correct types and occurrences';
+    };
+};
+
 done_testing;
 
 __END__
