@@ -172,6 +172,24 @@ sub get_entity_outdegrees {
 
 sub _get_entity_degrees {
     my ($self, $type, $map_id) = @_; # map_id: optional
+
+    # Count connections for each matching map
+    my %degree;
+    for my $map (@{$self->_get_maps($map_id)}) {
+
+        # Look at each connection
+        for my $con (values %{$map->{connections}}) {
+            $degree{$con->{from}}++ if $type eq 'from' or $type eq 'both';
+            $degree{$con->{to}}++   if $type eq 'to'   or $type eq 'both';
+        }
+    }
+
+    # Done
+    return \%degree;
+}
+
+sub _get_maps {
+    my ($self, $map_id) = @_; # map_id: optional
     my @maps;
 
     # Single map
@@ -186,19 +204,8 @@ sub _get_entity_degrees {
         @maps = map {$self->_get('maps')->{$_}} @{$self->get_all_map_ids};
     }
 
-    # Count connections for each matching map
-    my %degree;
-    for my $map (@maps) {
-
-        # Look at each connection
-        for my $con (values %{$map->{connections}}) {
-            $degree{$con->{from}}++ if $type eq 'from' or $type eq 'both';
-            $degree{$con->{to}}++   if $type eq 'to'   or $type eq 'both';
-        }
-    }
-
     # Done
-    return \%degree;
+    return \@maps;
 }
 
 sub get_entities {
