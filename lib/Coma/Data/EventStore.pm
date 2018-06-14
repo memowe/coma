@@ -1,16 +1,15 @@
 package Coma::Data::EventStore;
 use Mojo::Base -base;
 
-use FindBin;
-use lib "$FindBin::Bin/../../EventStore-Tiny/lib";
 use EventStore::Tiny;
 
+has data_filename => ();
 has _est => sub {
     my $self    = shift;
-    my $est_fn  = "$FindBin::Bin/../../data/data.store";
+    my $est_fn  = $self->data_filename;
 
     # Create event store
-    my $store = -e $est_fn
+    my $store = (defined $est_fn and -e $est_fn)
         ? EventStore::Tiny->new_from_file($est_fn)
         : EventStore::Tiny->new;
     $store->cache_size(0);
