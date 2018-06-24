@@ -7,23 +7,13 @@ use Graph::Centrality::Pagerank;
 use FindBin '$Bin';
 
 use lib "$Bin/lib";
-use ComaDB;
+use Coma::Data;
 
-# Signed cookies passphrase (not used ATM)
-app->secrets(['coma sowphen']);
-
-# Prepare database access
-my $dbfile = $ENV{COMA_DB} // "$Bin/data/graph.sqlite";
-my $schema = ComaDB->connect("dbi:SQLite:$dbfile", '', '', {
-    AutoCommit      => 1,
-    RaiseError      => 1,
-    sqlite_unicode  => 1,
-});
-
-# Database helper, with argument: that resultset, else: the schema
-helper db => sub {
-    my ($c, $rs) = @_;
-    return $rs ? $schema->resultset($rs) : $schema;
+# Prepare data access
+helper data => sub {
+    my $data_filename = app->home->rel_file('data/data');
+    state $data = Coma::Data->new(data_filename => $data_filename);
+    return $data;
 };
 
 # Markdown helper
