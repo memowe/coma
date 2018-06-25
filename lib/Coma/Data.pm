@@ -202,14 +202,14 @@ sub _get_maps {
 
     # Single map
     if (defined $map_id) {
-        my $map = $self->_get('maps')->{$map_id};
+        my $map = $self->get_map_data($map_id);
         die "Unknown map: $map_id\n" unless defined $map;
         push @maps, $map;
     }
 
     # All maps
     else {
-        @maps = map {$self->_get('maps')->{$_}} @{$self->get_all_map_ids};
+        @maps = map {$self->get_map_data($_)} @{$self->get_all_map_ids};
     }
 
     # Done
