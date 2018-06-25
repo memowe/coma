@@ -11,8 +11,8 @@ use Coma::Data;
 
 # Prepare data access
 helper data => sub {
-    my $data_filename = app->home->rel_file('data/data');
-    state $data = Coma::Data->new(data_filename => $data_filename);
+    my $data_fn = $ENV{COMA_DATA_FILE} // app->home->rel_file('data/data');
+    state $data = Coma::Data->new(data_filename => $data_fn);
     return $data;
 };
 
