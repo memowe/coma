@@ -7,7 +7,9 @@ use List::Util 'max';
 
 has data_filename => ();
 has events => sub {
-    my $events = Coma::Data::EventStore->new(data_filename => shift->data_filename);
+    my $events = Coma::Data::EventStore->new(
+        data_filename => shift->data_filename,
+    );
     $events->init;
     return $events;
 };
