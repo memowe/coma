@@ -90,6 +90,30 @@ subtest 'Entity degrees' => sub {
     };
 };
 
+subtest 'Connections' => sub {
+
+    subtest 'Per map' => sub {
+        is_deeply $model->get_connections($map1) => [
+            {from => 'WTF', type => 'yo',  to => 'X'},
+            {from => 'X',   type => 'and', to => 'Y'},
+        ], 'Correct connections from map 1';
+        is_deeply $model->get_connections($map2) => [
+            {from => 'M',   type => 'to',  to => 'W'},
+            {from => 'WTF', type => 'and', to => 'Y'},
+        ], 'Correct connections from map 2';
+    };
+
+    subtest 'Global' => sub {
+        is_deeply $model->get_connections => [
+            {from => 'M',   type => 'to',  to => 'W'},
+            {from => 'WTF', type => 'yo',  to => 'X'},
+            {from => 'WTF', type => 'and', to => 'Y'},
+            {from => 'X',   type => 'and', to => 'Y'},
+        ], 'Correct connections';
+    };
+};
+
+
 subtest 'Connection types' => sub {
 
     subtest 'Per map' => sub {
@@ -105,6 +129,24 @@ subtest 'Connection types' => sub {
         is_deeply $model->get_connection_types => {
             and => 2, to => 1, yo => 1,
         }, 'Correct types and occurrences';
+    };
+};
+
+subtest 'Connection pairs' => sub {
+
+    subtest 'Per map' => sub {
+        is_deeply $model->get_connection_pairs($map1) => [
+            [WTF => 'X'], [X => 'Y'],
+        ], 'Correct pairs for map 1';
+        is_deeply $model->get_connection_pairs($map2) => [
+            [M => 'W'], [WTF => 'Y'],
+        ], 'Correct pairs for map 2';
+    };
+
+    subtest 'Global' => sub {
+        is_deeply $model->get_connection_pairs => [
+            [M => 'W'], [WTF => 'X'], [WTF => 'Y'], [X => 'Y'],
+        ], 'Correct pairs for map 2';
     };
 };
 

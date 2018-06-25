@@ -221,15 +221,32 @@ sub get_entities {
     return [sort keys %{$self->get_entity_degrees($map_id)}];
 }
 
+sub get_connections {
+    my ($self, $map_id) = @_; # map_id: optional
+
+    # Extract connections from all matching maps
+    my @cs = map {values %{$_->{connections}}} @{$self->_get_maps($map_id)};
+
+    # Get rid of IDs as they don't make sense here
+    delete $_->{id}  for @cs;
+    delete $_->{map} for @cs;
+
+    # Sort by from, to and type
+    @cs = sort {
+            $a->{from} cmp $b->{from}
+        ||  $a->{to}   cmp $b->{to}
+        ||  $a->{type} cmp $b->{type}
+    } @cs;
+
+    # Done
+    return \@cs;
+};
+
 sub get_connection_types {
     my ($self, $map_id) = @_; # map_id: optional
 
-    # Collect connection types (with duplicates
-    my @types;
-    for my $map (@{$self->_get_maps($map_id)}) {
-        my @map_connections = values %{$map->{connections}};
-        push @types, map {$_->{type}} @map_connections;
-    }
+    # extract types with duplicates
+    my @types = map {$_->{type}} @{$self->get_connections($map_id)};
 
     # Sum occurrences
     my %type_count;
@@ -237,6 +254,11 @@ sub get_connection_types {
 
     # Done
     return \%type_count;
+}
+
+sub get_connection_pairs {
+    my ($self, $map_id) = @_; # map_id: optional
+    return [map {[$_->{from} => $_->{to}]} @{$self->get_connections($map_id)}];
 }
 
 1;
