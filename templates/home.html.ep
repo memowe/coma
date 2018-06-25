@@ -26,9 +26,9 @@
 %= t 'hr'
 %= t h2 => 'Available maps'
 %= t ul => begin
-% for my $map ($maps->all) {
+% for my $map (@$maps) {
     %= t li => begin
-        %= link_to $map->name => 'show_map', {map_id => $map->id}
+        %= link_to $map->{name} => 'show_map', {map_id => $map->{id}}
     % end
 % }
 % end

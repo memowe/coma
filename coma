@@ -63,7 +63,13 @@ any '/connection_completion' => sub {
 # Home: show all maps 'n' stuff
 get '/' => sub {
     my $c = shift;
-    $c->stash(maps => $c->db('Map'));
+
+    # Retrieve all maps
+    my $map_ids = $c->data->get_all_map_ids;
+    my @maps    = map {$c->data->get_map_data($_)} @$map_ids;
+
+    # Done
+    $c->stash(maps => \@maps);
 } => 'home';
 
 # Add a map
