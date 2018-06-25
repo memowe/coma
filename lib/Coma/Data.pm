@@ -12,6 +12,11 @@ has events => sub {
     return $events;
 };
 
+sub store {
+    my $self = shift;
+    $self->events->store_to_file;
+}
+
 sub _get {
     my ($self, $key) = @_;
     return $self->events->state->{$key};

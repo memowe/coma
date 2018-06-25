@@ -18,6 +18,13 @@ has _est => sub {
     return $store;
 };
 
+sub store_to_file {
+    my $self = shift;
+    die "No data_filename given!\n"
+        unless defined $self->data_filename;
+    $self->_est->store_to_file($self->data_filename);
+}
+
 # Helper
 sub store_event {shift->_est->store_event(@_)}
 sub logger {shift->_est->logger(@_)}

@@ -29,32 +29,35 @@ helper calculate_pagerank => sub {
     return $pr->getPagerankOfNodes(listOfEdges => \@graph);
 };
 
-# JSON entity completion
-any '/entity_completion' => sub {
-    my $c   = shift;
-    my $str = $c->param('term') // 'xnorfzt';
+# Completion helper: expects a callback returning a source data list
+# and works on the term param
+helper completion => sub {
+    my ($c, $source_cb) = @_;
+    my $term = $c->param('term');
 
-    # Find matching entities
-    my $entities = $c->db('Entity')->search({
-        name => {like => "%$str%"},
-    });
+    # Incomplete request
+    unless (defined $term) {
+        $c->res->code(400);
+        return $c->render(text => 'No term given');
+    }
+
+    # Find matches
+    my @matches = sort grep {/\Q$term\E/} $source_cb->();
 
     # Render as json
-    $c->render(json => [$entities->get_column('name')->all]);
+    return $c->render(json => \@matches);
+};
+
+# JSON entity completion
+any '/entity_completion' => sub {
+    my $c = shift;
+    return $c->completion(sub {@{$c->data->get_entities}});
 };
 
 # JSON connection completion
 any '/connection_completion' => sub {
-    my $c   = shift;
-    my $str = $c->param('term') // 'xnorfzt';
-
-    # Find matching connections
-    my $ctypes = $c->db('ConnectionType')->search({
-        name => {like => "%$str%"},
-    });
-
-    # Render as json
-    $c->render(json => [$ctypes->get_column('name')->all]);
+    my $c = shift;
+    return $c->completion(sub {keys %{$c->data->get_connection_types}});
 };
 
 # Home: show all maps 'n' stuff
