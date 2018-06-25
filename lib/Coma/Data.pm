@@ -79,7 +79,7 @@ sub get_map_data {
 sub get_all_map_ids {
     my $self = shift;
 
-    my @ids = keys %{$self->_get('maps')};
+    my @ids = keys %{$self->_get('maps') // {}};
     return [sort {$a <=> $b} @ids];
 }
 
