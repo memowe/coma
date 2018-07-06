@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use File::Temp;
 
 use_ok 'Coma::Data';
 my $model = Coma::Data->new;
@@ -140,6 +141,96 @@ subtest 'Connection handling' => sub {
         # Retrieve connections from map data
         is_deeply $model->get_map_data($map_id)->{connections} => {},
             'No connections left';
+    };
+};
+
+subtest 'Trivial Graph Format (TGF) handling' => sub {
+
+    subtest 'Export' => sub {
+
+        # Preparation
+        my $map1 = $model->add_map({name => 'foo', description => 'bar'});
+        $model->add_connection($map1, {from => 'X', type => 'and', to => 'Y'});
+        $model->add_connection($map1, {from => 'W', type => 'yo', to => 'X'});
+        my $map2 = $model->add_map({name => 'baz', description => 'quux'});
+        $model->add_connection($map2, {from => 'WM', type => 'and', to => 'Y'});
+        $model->add_connection($map2, {from => 'M', type => 'to', to => 'W'});
+
+        like $model->get_map_tgf($map1), qr/^
+            1 \  W \R
+            2 \  X \R
+            3 \  Y \R
+            \# \R
+            1 \  2 \  yo  \R
+            2 \  3 \  and \R
+        $/x, 'Correct TGF representation of first map';
+
+        like $model->get_map_tgf($map2), qr/^
+            1 \  M  \R
+            2 \  W  \R
+            3 \  WM \R
+            4 \  Y  \R
+            \# \R
+            1 \  2 \  to  \R
+            3 \  4 \  and \R
+        $/x, 'Correct TGF representation of second map';
+    };
+
+    subtest 'Import' => sub {
+
+        subtest 'From string' => sub {
+
+            # Create and check creation ID
+            my $map_id = $model->add_map_from_tgf('foo', 'bar',
+                "1 X\n2 Y\n#\n1 2 a\n2 1 b\n"
+            );
+            ok defined($map_id), 'Generated ID is defined';
+            like $map_id => qr/^\d+$/, 'Generated ID is a number';
+
+            # Check its data
+            my $map = $model->get_map_data($map_id);
+            is_deeply $map => {id => $map_id,
+                name        => 'foo',
+                description => 'bar',
+                connections => {
+                    0 => {map => $map_id, id => 0,
+                        from => 'X', to => 'Y', type => 'a',
+                    },
+                    1 => {map => $map_id, id => 1,
+                        from => 'Y', to => 'X', type => 'b',
+                    },
+                },
+            }, 'Correct map created from TGF';
+        };
+
+        subtest 'From file' => sub {
+
+            # Prepare test TGF file
+            my $tmp_file = File::Temp->new;
+            my $tmp_fn   = $tmp_file->filename;
+            $tmp_file->print("1 A\n2 B\n#\n2 1 x\n1 2 y\n");
+            $tmp_file->close;
+
+            # Create from file
+            my $map_id = $model->add_map_from_tgf_file('qux', 'quux', $tmp_fn);
+            ok defined($map_id), 'Generated ID is defined';
+            like $map_id => qr/^\d+$/, 'Generated ID is a number';
+
+            # Check its data
+            my $map = $model->get_map_data($map_id);
+            is_deeply $map => {id => $map_id,
+                name        => 'qux',
+                description => 'quux',
+                connections => {
+                    0 => {map => $map_id, id => 0,
+                        from => 'B', to => 'A', type => 'x',
+                    },
+                    1 => {map => $map_id, id => 1,
+                        from => 'A', to => 'B', type => 'y',
+                    },
+                },
+            }, 'Correct map created from TGF file';
+        };
     };
 };
 
