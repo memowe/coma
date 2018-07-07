@@ -154,11 +154,8 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub {
     my $c = shift;
 
     # Try to load map
-    my $map = $c->db('Map')->find($c->param('map_id'), {
-        prefetch => 'connections',
-        order_by => [qw(connections.from_name connections.to_name)],
-    });
-    $c->render_not_found and return unless $map;
+    my $map = eval {$c->data->get_map_data($c->param('map_id'))};
+    $c->reply->not_found and return if $@;
 
     # Ok, we have a map
     $c->stash(map => $map);
@@ -253,8 +250,16 @@ app->types->type(tgf => 'text/plain;charset=UTF-8');
 get '/tgf_export' => sub {
     my $c = shift;
 
+    # Prepare
+    my $map = $c->stash('map');
+
+    # Prepare filename
+    my $name = $map->{name};
+    $name =~ s/[\s-]+/_/g;      # whitespaces/dashes -> underscore
+    $name =~ s/[^a-z0-9]//ig;   # delete non-trivial characters
+    my $fn = 'map_' . $name . '_' . $map->{id} . '.tgf';
+
     # Force download
-    my $fn = $c->stash('map')->name . '.tgf';
     $c->res->headers->content_disposition("attachment; filename=$fn");
 
     # Render TGF template

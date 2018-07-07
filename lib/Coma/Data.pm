@@ -261,5 +261,84 @@ sub get_connection_pairs {
     return [map {[$_->{from} => $_->{to}]} @{$self->get_connections($map_id)}];
 }
 
+sub get_map_tgf {
+    my ($self, $map_id) = @_;
+
+    # Retrieve map
+    my $map = $self->get_map_data($map_id);
+    die "Unknown map: $map_id\n" unless defined $map;
+
+    # Prepare
+    my $tgf = '';
+
+    # Collect all entities
+    my %entity_id   = ();
+    my $last_id     = 0;
+    $entity_id{$_}  = ++$last_id for @{$self->get_entities($map_id)};
+
+    # Write entities
+    $tgf .= "$entity_id{$_} $_\n" for sort keys %entity_id;
+    $tgf .= "#\n";
+
+    # Write connections
+    my $cs = $self->get_connections($map_id);
+    $tgf .= "$entity_id{$_->{from}} $entity_id{$_->{to}} $_->{type}\n" for @$cs;
+
+    # Done
+    return $tgf;
+}
+
+sub add_map_from_tgf {
+    my ($self, $name, $description, $tgf) = @_;
+
+    # Prepare TGF lines
+    my @tgf_lines = split /\R+/ => $tgf;
+
+    # Parse entities
+    my %es;
+    while (defined(my $line = shift @tgf_lines)) {
+        last if $line =~ /^#$/;
+        next unless $line =~ /^(\d+)\s+(.*)/;
+        $es{$1} = $2;
+    }
+
+    # Parse connections
+    my @cs;
+    while (defined(my $line = shift @tgf_lines)) {
+        next unless $line =~ /^(\d+)\s+(\d+)\s+(.*)$/;
+
+        # Look up entities
+        my $from = $es{$1} // die "Unknown from: $1\n";
+        my $to   = $es{$2} // die "Unknown to: $2\n";
+
+        # Store connection data
+        push @cs, {from => $from, to => $to, type => $3};
+    }
+
+    # Prepare map
+    my $map_id = $self->add_map({
+        name        => $name,
+        description => $description,
+    });
+
+    # Add connections
+    $self->add_connection($map_id, $_) for @cs;
+
+    # Done
+    return $map_id;
+}
+
+sub add_map_from_tgf_file {
+    my ($self, $name, $description, $filename) = @_;
+
+    # Read from file
+    open my $fh, '<', $filename or die "Couldn't open $filename: $!\n";
+    my $tgf = do {local $/; <$fh>};
+    close $fh;
+
+    # Parse and return generated ID
+    return $self->add_map_from_tgf($name, $description, $tgf);
+}
+
 1;
 __END__
