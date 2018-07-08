@@ -93,18 +93,17 @@ post '/' => sub {
 get '/entities' => sub {
     my $c = shift;
 
-    # Load entities (including degree)
-    my $entities = $c->db('Entity');
+    # Load entity => degree hash for all entities
+    my $entity_degree = $c->data->get_entity_degrees;
 
     # Calculate reverse pagerank
-    my $pagerank = $c->calculate_pagerank(
-        map [$_->to_name => $_->from_name] => $c->db('Connection')->all
-    );
+    my @rev_conns = map [reverse @$_] => @{$c->data->get_connection_pairs};
+    my $entity_pr = $c->calculate_pagerank(\@rev_conns);
 
     # Done
     $c->stash(
-        entities    => $entities,
-        pagerank    => $pagerank,
+        entities => $entity_degree,
+        pagerank => $entity_pr,
     );
 } => 'entities';
 
