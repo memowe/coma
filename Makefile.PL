@@ -4,9 +4,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME            => 'coma',
-    VERSION         => '0.1',
-    PREREQ_PM       => {
+    NAME                => 'coma',
+    VERSION             => '0.1',
+    MIN_PERL_VERSION    => '5.10.1',
+    PREREQ_PM           => {
         'DBIx::Class'                   =>  '0.08',
         'EventStore::Tiny'              =>  '0.3',
         'Mojolicious'                   =>  '5.68',
@@ -14,5 +15,5 @@ WriteMakefile(
         'Graph::Centrality::Pagerank'   =>  '1.05',
         'experimental'                  =>  '0.013',
     },
-    test            => {TESTS => 't/*.t'}
+    test => {TESTS => 't/*.t'}
 );

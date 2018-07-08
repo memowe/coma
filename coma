@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.10;
+
 use Mojolicious::Lite;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
@@ -23,9 +25,10 @@ helper markdown => sub {
 };
 
 # Pagerank helper: expects LoL of vertex names
-my $pr = Graph::Centrality::Pagerank->new();
+# Returns a hash ref name => PR
 helper calculate_pagerank => sub {
     my ($c, @graph) = @_;
+    state $pr = Graph::Centrality::Pagerank->new();
     return $pr->getPagerankOfNodes(listOfEdges => \@graph);
 };
 
