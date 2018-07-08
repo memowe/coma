@@ -80,13 +80,13 @@ post '/' => sub {
     my $c = shift;
 
     # Create the map
-    my $map = $c->db('Map')->create({
+    my $map_id = $c->data->add_map({
         name        => $c->param('name'),
         description => $c->param('description'),
     });
 
     # Done
-    $c->redirect_to('show_map', map_id => $map->id);
+    $c->redirect_to('show_map', map_id => $map_id);
 } => 'add_map';
 
 # Show entity cloud
