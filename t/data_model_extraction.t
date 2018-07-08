@@ -26,11 +26,19 @@ subtest 'Entity listing' => sub {
             'Correct first map entities';
         is_deeply $model->get_entities($map2) => [qw(M W WTF Y)],
             'Correct second map entities';
+        ok ! $model->has_entity('W', $map1),
+            'Entity W not found in first map';
+        ok $model->has_entity('W', $map2),
+            'Entity W found in the second map';
     };
 
     subtest 'Across all maps' => sub {
         is_deeply $model->get_entities => [qw(M W WTF X Y)],
             'Correct entities';
+        ok ! $model->has_entity('Z'),
+            'Entity Z not found in a map';
+        ok $model->has_entity('W'),
+            'Entity W found in a map';
     };
 };
 

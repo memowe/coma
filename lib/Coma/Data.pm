@@ -216,6 +216,11 @@ sub _get_maps {
     return \@maps;
 }
 
+sub has_entity {
+    my ($self, $entity, $map_id) = @_; # map_id: optional
+    return exists $self->get_entity_degrees($map_id)->{$entity};
+}
+
 sub get_entities {
     my ($self, $map_id) = @_; # map_id: optional
     return [sort keys %{$self->get_entity_degrees($map_id)}];
