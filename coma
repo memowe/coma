@@ -208,15 +208,17 @@ post '/' => sub {
 
 # Delete a connection
 post '/delete_connection' => sub {
-    my $c   = shift;
-    my $map = $c->stash('map');
+    my $c    = shift;
+    my $map  = $c->stash('map');
+    my $c_id = $c->param('connection_id');
 
-    # Delete all matching connections (<= 1)
-    $map->delete_related('connections', {
-        from_name   => $c->param('from'),
-        type        => $c->param('type'),
-        to_name     => $c->param('to'),
-    });
+    # Connection exists?
+    return $c->reply->exception(
+        "Map $map->{name}: Connection $c_id not found!"
+    ) unless exists $map->{connections}{$c_id};
+
+    # Delete
+    $c->data->remove_connection($map->{id}, $c_id);
 
     # Done
     $c->redirect_to('show_map');
