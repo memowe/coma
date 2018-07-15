@@ -163,39 +163,6 @@ sub remove_connection {
     });
 }
 
-# Per map or across all maps
-# Returns a hash with entites as keys and degree as values
-sub get_entity_degrees {
-    my ($self, $map_id) = @_; # map_id: optional
-    return $self->_get_entity_degrees('both', $map_id);
-}
-sub get_entity_indegrees {
-    my ($self, $map_id) = @_; # map_id: optional
-    return $self->_get_entity_degrees('to', $map_id);
-}
-sub get_entity_outdegrees {
-    my ($self, $map_id) = @_; # map_id: optional
-    return $self->_get_entity_degrees('from', $map_id);
-}
-
-sub _get_entity_degrees {
-    my ($self, $type, $map_id) = @_; # map_id: optional
-
-    # Count connections for each matching map
-    my %degree;
-    for my $map (@{$self->_get_maps($map_id)}) {
-
-        # Look at each connection
-        for my $con (values %{$map->{connections}}) {
-            $degree{$con->{from}}++ if $type eq 'from' or $type eq 'both';
-            $degree{$con->{to}}++   if $type eq 'to'   or $type eq 'both';
-        }
-    }
-
-    # Done
-    return \%degree;
-}
-
 sub _get_maps {
     my ($self, $map_id) = @_; # map_id: optional
     my @maps;
@@ -264,6 +231,39 @@ sub get_connection_types {
 sub get_connection_pairs {
     my ($self, $map_id) = @_; # map_id: optional
     return [map {[$_->{from} => $_->{to}]} @{$self->get_connections($map_id)}];
+}
+
+# Per map or across all maps
+# Returns a hash with entites as keys and degree as values
+sub get_entity_degrees {
+    my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('both', $map_id);
+}
+sub get_entity_indegrees {
+    my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('to', $map_id);
+}
+sub get_entity_outdegrees {
+    my ($self, $map_id) = @_; # map_id: optional
+    return $self->_get_entity_degrees('from', $map_id);
+}
+
+sub _get_entity_degrees {
+    my ($self, $type, $map_id) = @_; # map_id: optional
+
+    # Count connections for each matching map
+    my %degree;
+    for my $map (@{$self->_get_maps($map_id)}) {
+
+        # Look at each connection
+        for my $con (values %{$map->{connections}}) {
+            $degree{$con->{from}}++ if $type eq 'from' or $type eq 'both';
+            $degree{$con->{to}}++   if $type eq 'to'   or $type eq 'both';
+        }
+    }
+
+    # Done
+    return \%degree;
 }
 
 sub get_neighbourhood {
