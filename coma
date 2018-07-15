@@ -162,12 +162,11 @@ get '/' => sub {
     my $map = $c->stash('map');
 
     # Load entities of this map
-    my $entities = $map->map_entities;
+    my $entities = $c->data->get_entities($map->{id});
 
     # Calculate reverse pagerank
-    my $pagerank = $c->calculate_pagerank(
-        map [$_->to_name => $_->from_name] => $map->connections->all
-    );
+    my $conn_pairs  = $c->data->get_connection_pairs($map->{id});
+    my $pagerank    = $c->calculate_pagerank([reverse @$conn_pairs]);
 
     # Done
     $c->stash(
