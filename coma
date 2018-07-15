@@ -181,7 +181,7 @@ post '/edit' => sub {
     my $map = $c->stash('map');
 
     # Update map meta data
-    $map->update({
+    $c->data->update_map_data($map->{id}, {
         name        => $c->param('name'),
         description => $c->param('description'),
     });
