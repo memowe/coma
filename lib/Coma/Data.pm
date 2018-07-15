@@ -266,6 +266,41 @@ sub get_connection_pairs {
     return [map {[$_->{from} => $_->{to}]} @{$self->get_connections($map_id)}];
 }
 
+sub get_neighbourhood {
+    my ($self, $entity, $map_id) = @_; #map_id: optional
+    return $self->_get_neighbourhood('both', $entity, $map_id);
+}
+sub get_incoming_neighbourhood {
+    my ($self, $entity, $map_id) = @_; #map_id: optional
+    return $self->_get_neighbourhood('in', $entity, $map_id);
+}
+sub get_outgoing_neighbourhood {
+    my ($self, $entity, $map_id) = @_; #map_id: optional
+    return $self->_get_neighbourhood('out', $entity, $map_id);
+}
+
+sub _get_neighbourhood {
+    my ($self, $type, $entity, $map_id) = @_; # map_id: optional
+
+    # Select relevant from all connections
+    my %entities;
+    for my $c (@{$self->get_connections($map_id)}) {
+
+        # Incoming
+        $entities{$c->{from}}++
+            if ($type eq 'in' or $type eq 'both')
+                and $c->{to} eq $entity;
+
+        # Outgoing
+        $entities{$c->{to}}++
+            if ($type eq 'out' or $type eq 'both')
+                and $c->{from} eq $entity;
+    }
+
+    # Done
+    return [sort keys %entities];
+}
+
 sub get_map_tgf {
     my ($self, $map_id) = @_;
 

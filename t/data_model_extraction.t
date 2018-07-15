@@ -158,6 +158,30 @@ subtest 'Connection pairs' => sub {
     };
 };
 
+subtest 'Neighbourhood' => sub {
+
+    subtest 'Combined' => sub {
+        is_deeply $model->get_neighbourhood('X', $map1), [qw(WTF Y)],
+            'Correct neighbourhood of X in first map';
+        is_deeply $model->get_neighbourhood('X'), [qw(WTF Y)],
+            'Correct neighbourhood of X in all maps';
+    };
+
+    subtest 'Incoming' => sub {
+        is_deeply $model->get_incoming_neighbourhood('Y', $map1), [qw(X)],
+            'Correct incoming neighbourhood of Y in first map';
+        is_deeply $model->get_incoming_neighbourhood('Y'), [qw(WTF X)],
+            'Correct incoming neighbourhood of Y in all maps';
+    };
+
+    subtest 'Outgoing' => sub {
+        is_deeply $model->get_outgoing_neighbourhood('WTF', $map1), [qw(X)],
+            'Correct outgoing neighbourhood of WTF in first map';
+        is_deeply $model->get_outgoing_neighbourhood('WTF'), [qw(X Y)],
+            'Correct outgoing neighbourhood of WTF in all maps';
+    };
+};
+
 done_testing;
 
 __END__
