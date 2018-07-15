@@ -196,10 +196,10 @@ post '/' => sub {
     my $map = $c->stash('map');
 
     # Insert a new connection for this map
-    $map->create_related('connections', {
-        from_name   => trim($c->param('from')),
-        type        => trim($c->param('type')),
-        to_name     => trim($c->param('to')),
+    $c->data->add_connection($map->{id}, {
+        from    => trim($c->param('from')),
+        type    => trim($c->param('type')),
+        to      => trim($c->param('to')),
     });
 
     # Done
