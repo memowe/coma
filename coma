@@ -233,8 +233,7 @@ post '/delete_sure' => sub {
 
     # Delete it
     my $map = $c->stash('map');
-    $map->delete_related('connections');
-    $map->delete;
+    $c->data->remove_map($map->{id});
 
     # Done
     $c->redirect_to('home');
