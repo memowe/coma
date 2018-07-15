@@ -188,6 +188,11 @@ sub has_entity {
     return exists $self->get_entity_degrees($map_id)->{$entity};
 }
 
+sub get_map_ids_with_entity {
+    my ($self, $entity) = @_;
+    return [grep {$self->has_entity($entity, $_)} @{$self->get_all_map_ids}];
+}
+
 sub get_entities {
     my ($self, $map_id) = @_; # map_id: optional
     return [sort keys %{$self->get_entity_degrees($map_id)}];

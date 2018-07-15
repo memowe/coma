@@ -19,6 +19,16 @@ my $map2 = $model->add_map({name => 'baz', description => 'quux'});
 $model->add_connection($map2, {from => 'WTF', type => 'and', to => 'Y'});
 $model->add_connection($map2, {from => 'M', type => 'to', to => 'W'});
 
+subtest 'Entity map filter' => sub {
+
+    is_deeply $model->get_map_ids_with_entity('YOLO') => [],
+        'No maps found for entity "YOLO"';
+    is_deeply $model->get_map_ids_with_entity('W') => [$map2],
+        'One map found for entity "W"';
+    is_deeply $model->get_map_ids_with_entity('Y') => [$map1, $map2],
+        'Two maps found for entity "Y"';
+};
+
 subtest 'Entity listing' => sub {
 
     subtest 'Per map' => sub {
