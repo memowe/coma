@@ -8,6 +8,7 @@ WriteMakefile(
     VERSION             => '0.1',
     MIN_PERL_VERSION    => '5.10.1',
     PREREQ_PM           => {
+        'Data::Dump'                    =>  '1.23',
         'DBIx::Class'                   =>  '0.08',
         'EventStore::Tiny'              =>  '0.4',
         'Mojolicious'                   =>  '5.68',

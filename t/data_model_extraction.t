@@ -9,7 +9,7 @@ use_ok 'Coma::Data';
 my $model = Coma::Data->new;
 
 # Disable event logging for tests as events are tested in EventStore::Tiny
-$model->events->_est->logger(undef);
+$model->logger(undef);
 
 # Preparation
 my $map1 = $model->add_map({name => 'foo', description => 'bar'});

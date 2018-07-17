@@ -14,6 +14,11 @@ has events => sub {
     return $events;
 };
 
+sub logger {
+    my $self = shift;
+    $self->events->logger(@_);
+}
+
 sub store {
     my $self = shift;
     $self->events->store_to_file;

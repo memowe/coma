@@ -14,7 +14,7 @@ my $data_fn = File::Temp::tmpnam; # scalar context neccessary
 my $model = Coma::Data->new(data_filename => $data_fn);
 
 # Disable event logging for tests
-$model->events->_est->logger(undef);
+$model->logger(undef);
 
 # Preparation
 my $map = $model->add_map({name => 'foo', description => 'bar'});

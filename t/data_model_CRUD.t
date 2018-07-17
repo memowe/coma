@@ -9,8 +9,14 @@ use File::Temp;
 use_ok 'Coma::Data';
 my $model = Coma::Data->new;
 
+subtest 'Logger handling' => sub {
+    my $rand = rand;
+    $model->logger($rand);
+    is $model->events->_est->logger => $rand, 'Correct logger set';
+};
+
 # Disable event logging for tests as events are tested in EventStore::Tiny
-$model->events->_est->logger(undef);
+$model->logger(undef);
 
 # Global test data
 my $map_id;
