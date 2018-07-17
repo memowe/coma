@@ -12,7 +12,7 @@ has _est => sub {
     my $store = (defined $est_fn and -e $est_fn)
         ? EventStore::Tiny->new_from_file($est_fn)
         : EventStore::Tiny->new;
-    $store->cache_size(0);
+    $store->cache_distance(0);
 
     # Done
     return $store;

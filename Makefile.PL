@@ -9,7 +9,7 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.10.1',
     PREREQ_PM           => {
         'DBIx::Class'                   =>  '0.08',
-        'EventStore::Tiny'              =>  '0.3',
+        'EventStore::Tiny'              =>  '0.4',
         'Mojolicious'                   =>  '5.68',
         'Text::Markdown'                =>  '1.0',
         'Graph::Centrality::Pagerank'   =>  '1.05',
