@@ -1,12 +1,11 @@
 package Coma::Data::EventStore;
-use Mojo::Base -base;
+use Mojo::Base -base, -signatures;
 
 use EventStore::Tiny;
 
 has data_filename => ();
-has _est => sub {
-    my $self    = shift;
-    my $est_fn  = $self->data_filename;
+has _est => sub ($self) {
+    my $est_fn = $self->data_filename;
 
     # Create event store
     my $store = (defined $est_fn and -e $est_fn)
@@ -18,23 +17,20 @@ has _est => sub {
     return $store;
 };
 
-sub store_to_file {
-    my $self = shift;
+sub store_to_file ($self) {
     die "No data_filename given!\n"
         unless defined $self->data_filename;
     $self->_est->store_to_file($self->data_filename);
 }
 
 # Helper
-sub store_event {shift->_est->store_event(@_)}
-sub logger {shift->_est->logger(@_)}
+sub store_event ($self, @args) {$self->_est->store_event(@args)}
+sub logger ($self, @args) {$self->_est->logger(@args)}
 
-sub init {
-    my $self = shift;
+sub init ($self) {
 
     # Will be used for two events
-    my $set_map = sub {
-        my ($state, $data) = @_;
+    my $set_map = sub ($state, $data) {
         $state->{maps}{$data->{id}} = {
             id          => $data->{id},
             name        => $data->{name},
@@ -49,14 +45,12 @@ sub init {
     $self->_est->register_event(MapDataUpdated => $set_map);
 
     # A concept map has been removed
-    $self->_est->register_event(MapRemoved => sub {
-        my ($state, $data) = @_;
+    $self->_est->register_event(MapRemoved => sub ($state, $data) {
         delete $state->{maps}{$data->{id}};
     });
 
     # Will be used for two events
-    my $set_connection = sub {
-        my ($state, $data) = @_;
+    my $set_connection = sub ($state, $data) {
         $state->{maps}{$data->{map}}{connections}{$data->{id}} = {
             id      => $data->{id},
             map     => $data->{map},
@@ -73,14 +67,12 @@ sub init {
     $self->_est->register_event(ConnectionUpdated => $set_connection);
 
     # A connection has been removed from a map
-    $self->_est->register_event(ConnectionRemoved => sub {
-        my ($state, $data) = @_;
+    $self->_est->register_event(ConnectionRemoved => sub ($state, $data) {
         delete $state->{maps}{$data->{map}}{connections}{$data->{id}};
     });
 }
 
-sub state {
-    my $self = shift;
+sub state ($self) {
     return $self->_est->snapshot->state;
 }
 

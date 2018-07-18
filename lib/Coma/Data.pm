@@ -1,36 +1,32 @@
 package Coma::Data;
-use Mojo::Base -base;
+use Mojo::Base -base, -signatures;
 
 use Coma::Data::EventStore;
 
 use List::Util 'max';
 
 has data_filename => ();
-has events => sub {
+has events => sub ($self) {
     my $events = Coma::Data::EventStore->new(
-        data_filename => shift->data_filename,
+        data_filename => $self->data_filename,
     );
     $events->init;
     return $events;
 };
 
-sub logger {
-    my $self = shift;
-    $self->events->logger(@_);
+sub logger ($self, $logger = undef) {
+    $self->events->logger($logger);
 }
 
-sub store {
-    my $self = shift;
+sub store ($self) {
     $self->events->store_to_file;
 }
 
-sub _get {
-    my ($self, $key) = @_;
+sub _get ($self, $key) {
     return $self->events->state->{$key};
 }
 
-sub _generate_map_id {
-    my $self = shift;
+sub _generate_map_id ($self) {
 
     # Look for the highest given map ID
     # or set it to -1, if nothing found
@@ -41,8 +37,7 @@ sub _generate_map_id {
     return $max + 1;
 }
 
-sub _generate_connection_id {
-    my ($self, $map_id) = @_;
+sub _generate_connection_id ($self, $map_id) {
 
     # Look for the highest given connection ID
     # or set it to -1, if nothing found
@@ -53,8 +48,7 @@ sub _generate_connection_id {
     return $max + 1;
 }
 
-sub add_map {
-    my ($self, $data) = @_;
+sub add_map ($self, $data) {
 
     # Prepare
     my $id = $self->_generate_map_id;
@@ -70,8 +64,7 @@ sub add_map {
     return $id;
 }
 
-sub get_map_data {
-    my ($self, $id) = @_;
+sub get_map_data ($self, $id) {
 
     # Exists?
     my $map = $self->_get('maps')->{$id};
@@ -81,15 +74,13 @@ sub get_map_data {
     return $map;
 }
 
-sub get_all_map_ids {
-    my $self = shift;
+sub get_all_map_ids ($self) {
 
     my @ids = keys %{$self->_get('maps') // {}};
     return [sort {$a <=> $b} @ids];
 }
 
-sub update_map_data {
-    my ($self, $id, $data) = @_;
+sub update_map_data ($self, $id, $data) {
 
     # Exists? Retrieve old data
     my $map = $self->_get('maps')->{$id};
@@ -102,8 +93,7 @@ sub update_map_data {
     $self->events->store_event(MapDataUpdated => $map);
 }
 
-sub remove_map {
-    my ($self, $id) = @_;
+sub remove_map ($self, $id) {
 
     # Exists?
     die "Unknown map: $id\n"
@@ -113,8 +103,7 @@ sub remove_map {
     $self->events->store_event(MapRemoved => {id => $id});
 }
 
-sub add_connection {
-    my ($self, $map_id, $data) = @_;
+sub add_connection ($self, $map_id, $data) {
 
     # Map exists?
     die "Unknown map: $map_id\n"
@@ -136,8 +125,7 @@ sub add_connection {
     return $id;
 }
 
-sub update_connection {
-    my ($self, $map_id, $id, $data) = @_;
+sub update_connection ($self, $map_id, $id, $data) {
 
     # Exists?
     my $map = $self->_get('maps')->{$map_id};
@@ -152,8 +140,7 @@ sub update_connection {
     $self->events->store_event(ConnectionUpdated => $connection);
 }
 
-sub remove_connection {
-    my ($self, $map_id, $id) = @_;
+sub remove_connection ($self, $map_id, $id) {
 
     # Exists?
     my $map = $self->_get('maps')->{$map_id};
@@ -168,8 +155,7 @@ sub remove_connection {
     });
 }
 
-sub _get_maps {
-    my ($self, $map_id) = @_; # map_id: optional
+sub _get_maps ($self, $map_id = undef) {
     my @maps;
 
     # Single map
@@ -188,23 +174,19 @@ sub _get_maps {
     return \@maps;
 }
 
-sub has_entity {
-    my ($self, $entity, $map_id) = @_; # map_id: optional
+sub has_entity ($self, $entity, $map_id = undef) {
     return exists $self->get_entity_degrees($map_id)->{$entity};
 }
 
-sub get_map_ids_with_entity {
-    my ($self, $entity) = @_;
+sub get_map_ids_with_entity ($self, $entity) {
     return [grep {$self->has_entity($entity, $_)} @{$self->get_all_map_ids}];
 }
 
-sub get_entities {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_entities ($self, $map_id = undef) {
     return [sort keys %{$self->get_entity_degrees($map_id)}];
 }
 
-sub get_connections {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_connections ($self, $map_id = undef) {
 
     # Extract connections from all matching maps
     my @cs = map {values %{$_->{connections}}} @{$self->_get_maps($map_id)};
@@ -224,8 +206,7 @@ sub get_connections {
     return \@cs;
 };
 
-sub get_connection_types {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_connection_types ($self, $map_id = undef) {
 
     # extract types with duplicates
     my @types = map {$_->{type}} @{$self->get_connections($map_id)};
@@ -238,28 +219,23 @@ sub get_connection_types {
     return \%type_count;
 }
 
-sub get_connection_pairs {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_connection_pairs ($self, $map_id = undef) {
     return [map {[$_->{from} => $_->{to}]} @{$self->get_connections($map_id)}];
 }
 
 # Per map or across all maps
 # Returns a hash with entites as keys and degree as values
-sub get_entity_degrees {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_entity_degrees ($self, $map_id = undef) {
     return $self->_get_entity_degrees('both', $map_id);
 }
-sub get_entity_indegrees {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_entity_indegrees ($self, $map_id = undef) {
     return $self->_get_entity_degrees('to', $map_id);
 }
-sub get_entity_outdegrees {
-    my ($self, $map_id) = @_; # map_id: optional
+sub get_entity_outdegrees ($self, $map_id = undef) {
     return $self->_get_entity_degrees('from', $map_id);
 }
 
-sub _get_entity_degrees {
-    my ($self, $type, $map_id) = @_; # map_id: optional
+sub _get_entity_degrees ($self, $type, $map_id = undef) {
 
     # Count connections for each matching map
     my %degree;
@@ -276,21 +252,17 @@ sub _get_entity_degrees {
     return \%degree;
 }
 
-sub get_neighbourhood {
-    my ($self, $entity, $map_id) = @_; #map_id: optional
+sub get_neighbourhood ($self, $entity, $map_id = undef) {
     return $self->_get_neighbourhood('both', $entity, $map_id);
 }
-sub get_incoming_neighbourhood {
-    my ($self, $entity, $map_id) = @_; #map_id: optional
+sub get_incoming_neighbourhood ($self, $entity, $map_id = undef) {
     return $self->_get_neighbourhood('in', $entity, $map_id);
 }
-sub get_outgoing_neighbourhood {
-    my ($self, $entity, $map_id) = @_; #map_id: optional
+sub get_outgoing_neighbourhood ($self, $entity, $map_id = undef) {
     return $self->_get_neighbourhood('out', $entity, $map_id);
 }
 
-sub _get_neighbourhood {
-    my ($self, $type, $entity, $map_id) = @_; # map_id: optional
+sub _get_neighbourhood ($self, $type, $entity, $map_id = undef) {
 
     # Select relevant from all connections
     my %entities;
@@ -311,8 +283,7 @@ sub _get_neighbourhood {
     return [sort keys %entities];
 }
 
-sub get_map_tgf {
-    my ($self, $map_id) = @_;
+sub get_map_tgf ($self, $map_id) {
 
     # Retrieve map
     my $map = $self->get_map_data($map_id);
@@ -338,8 +309,7 @@ sub get_map_tgf {
     return $tgf;
 }
 
-sub add_map_from_tgf {
-    my ($self, $name, $description, $tgf) = @_;
+sub add_map_from_tgf ($self, $name, $description, $tgf) {
 
     # Prepare TGF lines
     my @tgf_lines = split /\R+/ => $tgf;
@@ -378,8 +348,7 @@ sub add_map_from_tgf {
     return $map_id;
 }
 
-sub add_map_from_tgf_file {
-    my ($self, $name, $description, $filename) = @_;
+sub add_map_from_tgf_file ($self, $name, $description, $filename) {
 
     # Read from file
     open my $fh, '<', $filename or die "Couldn't open $filename: $!\n";
