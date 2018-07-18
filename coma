@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-use v5.10;
+use v5.20;
 
-use Mojolicious::Lite;
+use Mojolicious::Lite -signatures;
 use Mojo::File 'path';
 use Mojo::Util 'trim';
 use Data::Dump 'dump';
@@ -21,9 +21,8 @@ helper data => sub {
 };
 
 # Inject mojolicious log as a logger into the data model
-app->data->logger(sub {
-    my $event   = shift;
-    my $data    = $event->can('data') ? dump $event->data : 'NO DATA';
+app->data->logger(sub ($event) {
+    my $data = $event->can('data') ? dump $event->data : 'NO DATA';
     app->log->info('New event ' . $event->name . ": $data");
 });
 
@@ -33,23 +32,20 @@ my @fns     = grep {-r $_} <$init_dn/*.tgf>;
 app->data->add_map_from_tgf_file(path($_)->basename('.tgf'), '', $_) for @fns;
 
 # Markdown helper
-helper markdown => sub {
-    my ($c, $text) = @_;
+helper markdown => sub ($c, $text) {
     return markdown $text;
 };
 
 # Pagerank helper: expects LoL of vertex names
 # Returns a hash ref name => PR
-helper calculate_pagerank => sub {
-    my ($c, @graph) = @_;
+helper calculate_pagerank => sub ($c, @graph) {
     state $pr = Graph::Centrality::Pagerank->new();
     return $pr->getPagerankOfNodes(listOfEdges => \@graph);
 };
 
 # Completion helper: expects a callback returning a source data list
 # and works on the term param
-helper completion => sub {
-    my ($c, $source_cb) = @_;
+helper completion => sub ($c, $source_cb) {
     my $term = $c->param('term');
 
     # Incomplete request
@@ -66,20 +62,17 @@ helper completion => sub {
 };
 
 # JSON entity completion
-any '/entity_completion' => sub {
-    my $c = shift;
+any '/entity_completion' => sub ($c) {
     return $c->completion(sub {@{$c->data->get_entities}});
 };
 
 # JSON connection completion
-any '/connection_completion' => sub {
-    my $c = shift;
+any '/connection_completion' => sub ($c) {
     return $c->completion(sub {keys %{$c->data->get_connection_types}});
 };
 
 # Home: show all maps 'n' stuff
-get '/' => sub {
-    my $c = shift;
+get '/' => sub ($c) {
 
     # Retrieve all maps
     my $map_ids = $c->data->get_all_map_ids;
@@ -90,8 +83,7 @@ get '/' => sub {
 } => 'home';
 
 # Add a map
-post '/' => sub {
-    my $c = shift;
+post '/' => sub ($c) {
 
     # Create the map
     my $map_id = $c->data->add_map({
@@ -104,8 +96,7 @@ post '/' => sub {
 } => 'add_map';
 
 # Show entity cloud
-get '/entities' => sub {
-    my $c = shift;
+get '/entities' => sub ($c) {
 
     # Load entity => degree hash for all entities
     my $entity_degree = $c->data->get_entity_degrees;
@@ -122,9 +113,8 @@ get '/entities' => sub {
 } => 'entities';
 
 # Show entity data
-get '/entity/:entity_name' => sub {
-    my $c   = shift;
-    my $en  = $c->param('entity_name');
+get '/entity/:entity_name' => sub ($c) {
+    my $en = $c->param('entity_name');
 
     # Try to retrieve entity
     return $c->reply->not_found unless $c->data->has_entity($en);
@@ -158,8 +148,7 @@ get '/entity/:entity_name' => sub {
 } => 'show_entity';
 
 # Under here: work on one map
-under '/map/:map_id' => [map_id => qr/\d+/] => sub {
-    my $c = shift;
+under '/map/:map_id' => [map_id => qr/\d+/] => sub ($c) {
 
     # Try to load map
     my $map = eval {$c->data->get_map_data($c->param('map_id'))};
@@ -171,8 +160,7 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub {
 };
 
 # Show one map
-get '/' => sub {
-    my $c   = shift;
+get '/' => sub ($c) {
     my $map = $c->stash('map');
 
     # Load entities of this map
@@ -190,8 +178,7 @@ get '/' => sub {
 } => 'show_map';
 
 # Edit map meta data
-post '/edit' => sub {
-    my $c   = shift;
+post '/edit' => sub ($c) {
     my $map = $c->stash('map');
 
     # Update map meta data
@@ -205,8 +192,7 @@ post '/edit' => sub {
 } => 'edit_map';
 
 # Add a connection
-post '/' => sub {
-    my $c   = shift;
+post '/' => sub ($c) {
     my $map = $c->stash('map');
 
     # Insert a new connection for this map
@@ -221,8 +207,7 @@ post '/' => sub {
 } => 'add_connection';
 
 # Delete a connection
-post '/delete_connection' => sub {
-    my $c    = shift;
+post '/delete_connection' => sub ($c) {
     my $map  = $c->stash('map');
     my $c_id = $c->param('connection_id');
 
@@ -242,8 +227,7 @@ post '/delete_connection' => sub {
 post '/delete' => 'delete_map';
 
 # Delete a map and the user is sure
-post '/delete_sure' => sub {
-    my $c = shift;
+post '/delete_sure' => sub ($c) {
 
     # Delete it
     my $map = $c->stash('map');
@@ -255,8 +239,7 @@ post '/delete_sure' => sub {
 
 # TGF export of one map
 app->types->type(tgf => 'text/plain;charset=UTF-8');
-get '/tgf_export' => sub {
-    my $c = shift;
+get '/tgf_export' => sub ($c) {
 
     # Prepare
     my $map = $c->stash('map');
