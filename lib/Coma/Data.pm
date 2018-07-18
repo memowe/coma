@@ -22,6 +22,14 @@ sub store ($self) {
     $self->events->store_to_file;
 }
 
+sub is_empty ($self) {
+    return $self->events->is_empty;
+}
+
+sub last_update ($self) {
+    return $self->events->last_update;
+}
+
 sub _get ($self, $key) {
     return $self->events->state->{$key};
 }
