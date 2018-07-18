@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Mojolicious::Lite;
+use Mojolicious::Lite -signatures;
 use Mojo::Util 'trim';
 use Text::Markdown 'markdown';
 use Graph::Centrality::Pagerank;
@@ -21,27 +21,23 @@ my $schema = ComaDB->connect("dbi:SQLite:$dbfile", '', '', {
 });
 
 # database helper, with argument: that resultset, else: the schema
-helper db => sub {
-    my ($c, $rs) = @_;
+helper db => sub ($c, $rs) {
     return $rs ? $schema->resultset($rs) : $schema;
 };
 
 # markdown helper
-helper markdown => sub {
-    my ($c, $text) = @_;
+helper markdown => sub ($c, $text) {
     return markdown $text;
 };
 
 # pagerank helper: expects LoL of vertex names
 my $pr = Graph::Centrality::Pagerank->new();
-helper calculate_pagerank => sub {
-    my ($c, @graph) = @_;
+helper calculate_pagerank => sub ($c, @graph) {
     return $pr->getPagerankOfNodes(listOfEdges => \@graph);
 };
 
 # JSON entity completion
-any '/entity_completion' => sub {
-    my $c   = shift;
+any '/entity_completion' => sub ($c) {
     my $str = $c->param('term') // 'xnorfzt';
 
     # find matching entities
@@ -54,8 +50,7 @@ any '/entity_completion' => sub {
 };
 
 # JSON connection completion
-any '/connection_completion' => sub {
-    my $c   = shift;
+any '/connection_completion' => sub ($c) {
     my $str = $c->param('term') // 'xnorfzt';
 
     # find matching connections
@@ -68,14 +63,12 @@ any '/connection_completion' => sub {
 };
 
 # home: show all maps 'n' stuff
-get '/' => sub {
-    my $c = shift;
+get '/' => sub ($c) {
     $c->stash(maps => $c->db('Map'));
 } => 'home';
 
 # add a map
-post '/' => sub {
-    my $c = shift;
+post '/' => sub ($c) {
 
     # create the map
     my $map = $c->db('Map')->create({
@@ -88,8 +81,7 @@ post '/' => sub {
 } => 'add_map';
 
 # show entity cloud
-get '/entities' => sub {
-    my $c = shift;
+get '/entities' => sub ($c) {
 
     # load entities (including degree)
     my $entities = $c->db('Entity');
@@ -107,9 +99,8 @@ get '/entities' => sub {
 } => 'entities';
 
 # show entity data
-get '/entity/:entity_name' => sub {
-    my $c   = shift;
-    my $en  = $c->param('entity_name');
+get '/entity/:entity_name' => sub ($c) {
+    my $en = $c->param('entity_name');
 
     # try to retrieve entity
     my $entity = $c->db('Entity')->search({name => $en})->first;
@@ -151,8 +142,7 @@ get '/entity/:entity_name' => sub {
 } => 'show_entity';
 
 # under here: work on one map
-under '/map/:map_id' => [map_id => qr/\d+/] => sub {
-    my $c = shift;
+under '/map/:map_id' => [map_id => qr/\d+/] => sub ($c) {
 
     # try to load map
     my $map = $c->db('Map')->find($c->param('map_id'), {
@@ -167,8 +157,7 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub {
 };
 
 # show one map
-get '/' => sub {
-    my $c   = shift;
+get '/' => sub ($c) {
     my $map = $c->stash('map');
 
     # load entities of this map
@@ -187,8 +176,7 @@ get '/' => sub {
 } => 'show_map';
 
 # edit map meta data
-post '/edit' => sub {
-    my $c   = shift;
+post '/edit' => sub ($c) {
     my $map = $c->stash('map');
 
     # update map meta data
@@ -202,8 +190,7 @@ post '/edit' => sub {
 } => 'edit_map';
 
 # add a connection
-post '/' => sub {
-    my $c   = shift;
+post '/' => sub ($c) {
     my $map = $c->stash('map');
 
     # insert a new connection for this map
@@ -218,8 +205,7 @@ post '/' => sub {
 } => 'add_connection';
 
 # delete a connection
-post '/delete_connection' => sub {
-    my $c   = shift;
+post '/delete_connection' => sub ($c) {
     my $map = $c->stash('map');
 
     # delete all matching connections (<= 1)
@@ -237,8 +223,7 @@ post '/delete_connection' => sub {
 post '/delete' => 'delete_map';
 
 # delete a map and the user is sure
-post '/delete_sure' => sub {
-    my $c = shift;
+post '/delete_sure' => sub ($c) {
 
     # delete it
     my $map = $c->stash('map');
@@ -251,8 +236,7 @@ post '/delete_sure' => sub {
 
 # tgf export of one map
 app->types->type(tgf => 'text/plain;charset=UTF-8');
-get '/tgf_export' => sub {
-    my $c = shift;
+get '/tgf_export' => sub ($c) {
 
     # force download
     my $fn = $c->stash('map')->name . '.tgf';
