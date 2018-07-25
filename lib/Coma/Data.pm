@@ -3,9 +3,19 @@ use Mojo::Base -base, -signatures;
 
 use Coma::Data::EventStore;
 
+use File::stat;
 use List::Util 'max';
 
-has data_filename => ();
+has data_filename   => ();
+has last_storage    => sub ($self) {
+
+    # Is there already something? Use it's last modified time
+    my $dfn = $self->data_filename;
+    return stat($dfn)->mtime if defined $dfn and -e $dfn;
+
+    # Nothing to read from
+    return 0;
+};
 has events => sub ($self) {
     my $events = Coma::Data::EventStore->new(
         data_filename => $self->data_filename,
@@ -20,6 +30,12 @@ sub logger ($self, $logger = undef) {
 
 sub store ($self) {
     $self->events->store_to_file;
+    $self->last_storage($self->events->last_update);
+}
+
+sub store_if_neccessary ($self) {
+    $self->store
+        if $self->last_update > $self->last_storage;
 }
 
 sub is_empty ($self) {
