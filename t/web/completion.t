@@ -10,7 +10,7 @@ use FindBin '$Bin';
 
 use Coma::Data;
 
-my $data_fn = File::Temp::tmpnam; # scalar context neccessary
+my $data_fn = File::Temp::tmpnam; # Scalar context neccessary
 my $model = Coma::Data->new(data_filename => $data_fn);
 
 # Disable event logging for tests
