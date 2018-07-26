@@ -24,7 +24,7 @@ $model->store;
 
 # Get the lite script
 $ENV{COMA_DATA_FILE} = $model->data_filename;
-require "$Bin/../coma";
+require "$Bin/../../coma";
 
 # Prepare tester
 my $t = Test::Mojo->new;
