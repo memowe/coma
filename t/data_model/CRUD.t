@@ -18,6 +18,11 @@ subtest 'Logger handling' => sub {
 # Disable event logging for tests as events are tested in EventStore::Tiny
 $model->logger(undef);
 
+subtest 'Emptiness' => sub {
+    ok $model->is_empty, 'Model is empty after creation';
+    is $model->last_update => 0, 'No updates yet';
+};
+
 # Global test data
 my $map_id;
 
@@ -238,6 +243,11 @@ subtest 'Trivial Graph Format (TGF) handling' => sub {
             }, 'Correct map created from TGF file';
         };
     };
+};
+
+subtest 'Non-emptiness' => sub {
+    ok ! $model->is_empty, 'Model not empty anymore';
+    ok 1 >= time - $model->last_update, 'There was an update';
 };
 
 done_testing;

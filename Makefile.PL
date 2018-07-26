@@ -15,5 +15,5 @@ WriteMakefile(
         'Text::Markdown'                =>  '1.0',
         'Graph::Centrality::Pagerank'   =>  '1.05',
     },
-    test => {TESTS => 't/*.t'}
+    test => {TESTS => 't/*.t t/*/*.t'}
 );

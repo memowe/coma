@@ -72,6 +72,14 @@ sub init ($self) {
     });
 }
 
+sub is_empty ($self) {
+    return $self->_est->events->size == 0;
+}
+
+sub last_update ($self) {
+    return $self->_est->events->last_timestamp // 0;
+}
+
 sub state ($self) {
     return $self->_est->snapshot->state;
 }
