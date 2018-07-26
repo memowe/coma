@@ -3,6 +3,7 @@
 use v5.20;
 
 use Mojolicious::Lite -signatures;
+use Mojo::IOLoop;
 use Mojo::File 'path';
 use Mojo::Util 'trim';
 use Data::Dump 'dump';
@@ -20,16 +21,25 @@ helper data => sub {
     return $data;
 };
 
+# Set up periodic data storage
+Mojo::IOLoop->recurring(5 => sub ($loop) {
+    my $data_stored = app->data->store_if_neccessary;
+    app->log->info('Data stored to ' . app->data->data_filename)
+        if $data_stored;
+});
+
 # Inject mojolicious log as a logger into the data model
 app->data->logger(sub ($event) {
     my $data = $event->can('data') ? dump $event->data : 'NO DATA';
     app->log->info('New event ' . $event->name . ": $data");
 });
 
-# Read init data tgf files into data model
-my $init_dn = $ENV{COMA_INIT_DIR} // app->home->rel_file('data/init_data');
-my @fns     = grep {-r $_} <$init_dn/*.tgf>;
-app->data->add_map_from_tgf_file(path($_)->basename('.tgf'), '', $_) for @fns;
+# Empty? Read init data tgf files into data model
+if (app->data->is_empty) {
+    my $init_dn = $ENV{COMA_INIT_DIR} // app->home->rel_file('data/init_data');
+    app->data->add_map_from_tgf_file(path($_)->basename('.tgf'), '', $_)
+        for <$init_dn/*.tgf>;
+}
 
 # Markdown helper
 helper markdown => sub ($c, $text) {
