@@ -33,9 +33,17 @@ sub store ($self) {
     $self->last_storage($self->events->last_update);
 }
 
+# Returns true iff it was neccessary
 sub store_if_neccessary ($self) {
-    $self->store
-        if $self->last_update > $self->last_storage;
+
+    # Updated since last storage: neccessary
+    if ($self->last_update > $self->last_storage) {
+        $self->store;
+        return 1;
+    }
+
+    # Not neccessary
+    return;
 }
 
 sub is_empty ($self) {

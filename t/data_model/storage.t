@@ -44,7 +44,7 @@ subtest 'Storage neccessary?' => sub {
 
     subtest 'No' => sub {
         sleep 1; # Wait to see a difference in timestamps
-        $model->store_if_neccessary;
+        ok ! $model->store_if_neccessary, 'Storage not neccessary';
         ok 1 <= time - stat($tmpf)->mtime, 'File not modified';
     };
 
@@ -53,7 +53,7 @@ subtest 'Storage neccessary?' => sub {
         $conn_id = $model->add_connection($map_id, {
             from => 'a', type => 'to', to => 'b',
         });
-        $model->store_if_neccessary;
+        ok $model->store_if_neccessary, 'Storage neccessary';
         ok 1 > time - stat($tmpf)->mtime, 'File modified';
 
         # Check content
