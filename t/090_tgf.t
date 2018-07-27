@@ -8,32 +8,6 @@ use Mojo::Base -base, -signatures;
 use File::Temp qw(tempdir tempfile);
 use FindBin '$Bin';
 
-# prepare test database
-$ENV{COMA_DB} = "$Bin/graph.sqlite";
-ok -e $ENV{COMA_DB}, 'test database found';
-
-# get the lite script
-require "$Bin/../coma";
-
-# prepare webapp tester
-my $t = Test::Mojo->new;
-$t->ua->max_redirects(1);
-
-# export the example map
-$t->get_ok('/map/1/tgf_export')->content_type_is('text/plain;charset=UTF-8');
-$t->header_is('Content-Disposition' => 'attachment; filename=Beispiel.tgf');
-
-# check the exported TGF data
-$t->content_is(<<'TGF1');
-1 JVM
-2 Java
-3 Programmiersprache
-#
-2 1 has
-2 3 isa
-3 1 isa
-TGF1
-
 # prepare some TGF data
 my $tgf_data = <<'TGF2';
 1 bar
