@@ -80,8 +80,8 @@ sub last_update ($self) {
     return $self->_est->events->last_timestamp // 0;
 }
 
-sub state ($self) {
-    return $self->_est->snapshot->state;
+sub state ($self, $time = undef) {
+    return $self->_est->snapshot($time)->state;
 }
 
 1;
