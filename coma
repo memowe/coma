@@ -14,6 +14,9 @@ use FindBin '$Bin';
 use lib "$Bin/lib";
 use Coma::Data;
 
+# Set commands namespace
+push @{app->commands->namespaces}, 'Coma::Command';
+
 # Prepare data access (creation: only once, "state")
 helper data => sub {
     my $data_fn = $ENV{COMA_DATA_FILE} // app->home->rel_file('data/data');
