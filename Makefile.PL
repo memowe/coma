@@ -9,6 +9,7 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.20.0',
     PREREQ_PM           => {
         'Data::Dump'                    =>  '1.23',
+        'DateTime'                      =>  '1.50',
         'DateTime::Format::ISO8601'     =>  '0.08',
         'DBIx::Class'                   =>  '0.08',
         'EventStore::Tiny'              =>  '0.4',

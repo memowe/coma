@@ -8,3 +8,4 @@ data/data
 
 # exported graph representation files
 export/*.tgf
+export/*/*.tgf
