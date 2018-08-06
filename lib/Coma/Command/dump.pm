@@ -17,7 +17,8 @@ Usage: coma dump [OPTIONS] [TIME]
 Options:
     -s, --state     Dumps the state of the system.
     -e, --events    Dumps the list of events.
-    You can't use both options at the same time. Default: state.
+    -v, --verbose   Dumps events as perl objects in event mode.
+    You can't use the options -s and -e  at the same time. Default: -s.
 
 Time argument:
     The optional time argument defines for which time the events or current
@@ -49,7 +50,8 @@ sub run ($self, @args) {
     # Extract options (and use $events only from here)
     getopt \@args,
         's|state'   => \my $_state,
-        'e|events'  => \my $events;
+        'e|events'  => \my $events,
+        'v|verbose' => \my $verbose;
     die $self->usage if $_state and $events;
 
     # Extract time
@@ -60,8 +62,19 @@ sub run ($self, @args) {
 
     # User wants to see events dumped?
     if ($events) {
+
         # Dig deep to extract event stream for the given time
-        dd @{$self->app->data->events->_est->events->before($time)->events};
+        my $es = $self->app->data->events->_est->events->before($time);
+
+        # Verbose? Dump them as perl objects
+        if ($verbose) {
+            dd @{$es->events};
+        }
+
+        # Non-verbose? Dump their summaries
+        else {
+            say $_->summary for @{$es->events};
+        }
     }
 
     # Default: dump state

@@ -141,10 +141,52 @@ subtest 'Dumping state of the system' => sub {
     }, 'State is the default';
 };
 
-subtest 'Dumping event log of the system' => sub {
+subtest 'Dumping summarized event log of the system' => sub {
 
     # No time given
     test_output ['-e'] => sub ($output) {
+        my @lines       = split $/ => $output;
+        my @summaries   = map $_->summary =>
+            @{$t->app->data->events->_est->events->events};
+        is_deeply \@lines => \@summaries, 'Correct event log';
+    }, 'No time argument';
+
+    subtest 'Time in the past' => sub {
+
+        # Timestamp
+        test_output ['-e', 42] => sub ($output) {
+            is $output => '', 'Correct empty output';
+        }, 'Timestamp';
+
+        # ISO8601
+        test_output ['-e', '1970-11-23T09:11:42'] => sub ($output) {
+            is $output => '', 'Same output';
+        }, 'ISO8601';
+    };
+
+    subtest 'Time in the future' => sub {
+        my $future_output;
+
+        # Timestamp
+        test_output ['-e', time + 42] => sub ($output) {
+            $future_output  = $output;
+            my @lines       = split $/ => $output;
+            my @summaries   = map $_->summary =>
+                @{$t->app->data->events->_est->events->events};
+            is_deeply \@lines => \@summaries, 'Correct event log';
+        }, 'Timestamp';
+
+        # ISO8601
+        test_output ['-e', '2142-11-23T09:11:42'] => sub ($output) {
+            is $output => $future_output, 'Same output';
+        }, 'ISO8601';
+    };
+};
+
+subtest 'Dumping verbose event log of the system' => sub {
+
+    # No time given
+    test_output ['-e', '-v'] => sub ($output) {
 
         # Eval output as a Perl data structure
         my @events;
@@ -162,13 +204,13 @@ subtest 'Dumping event log of the system' => sub {
         my $empty_output;
 
         # Timestamp
-        test_output ['-e', 42] => sub ($output) {
+        test_output ['-e', '-v', 42] => sub ($output) {
             $empty_output = $output;
             like $output => qr/^ \( \) $/x, 'Correct empty output';
         }, 'Timestamp';
 
         # ISO8601
-        test_output ['-e', '1970-11-23T09:11:42'] => sub ($output) {
+        test_output ['-e', '-v', '1970-11-23T09:11:42'] => sub ($output) {
             is $output => $empty_output, 'Same output';
         }, 'ISO8601';
     };
@@ -177,7 +219,7 @@ subtest 'Dumping event log of the system' => sub {
         my $future_output;
 
         # Timestamp
-        test_output ['-e', time + 42] => sub ($output) {
+        test_output ['-e', '-v', time + 42] => sub ($output) {
             $future_output = $output;
 
             # Eval output as a Perl data structure
@@ -193,7 +235,7 @@ subtest 'Dumping event log of the system' => sub {
         }, 'Timestamp';
 
         # ISO8601
-        test_output ['-e', '2142-11-23T09:11:42'] => sub ($output) {
+        test_output ['-e', '-v', '2142-11-23T09:11:42'] => sub ($output) {
             is $output => $future_output, 'Same output';
         }, 'ISO8601';
     };
