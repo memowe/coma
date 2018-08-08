@@ -25,8 +25,8 @@
 %# list all maps
 %= t 'hr'
 %= t h2 => 'Available maps'
-%= t ul => begin
-% for my $map (@$maps) {
+%= t ul => (id => 'all_maps') => begin
+% for my $map (sort {$a->{name} cmp $b->{name}} @$maps) {
     %= t li => begin
         %= link_to $map->{name} => 'show_map', {map_id => $map->{id}}
     % end
