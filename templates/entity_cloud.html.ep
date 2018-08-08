@@ -1,7 +1,7 @@
 %# entity cloud, sorted by name
 %= t p => 'Big entities have a high pagerank. Hover for details.'
 %= t div => (id => 'entity_cloud') => begin
-    % for my $e (sort {$a cmp $b} keys %$pagerank) {
+    % for my $e (sort {$a cmp $b} @$entities) {
         % my $pr    = $pagerank->{$e};
         % my $size  = (1 + $pr * 20) . 'em';
         % my $style = "font-size: $size";

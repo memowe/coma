@@ -170,16 +170,16 @@ under '/map/:map_id' => [map_id => qr/\d+/] => sub ($c) {
 get '/' => sub ($c) {
     my $map = $c->stash('map');
 
-    # Load entities of this map
-    my $entities = $c->data->get_entities($map->{id});
-
     # Calculate reverse pagerank
     my $conn_pairs  = $c->data->get_connection_pairs($map->{id});
     my $pagerank    = $c->calculate_pagerank([reverse @$conn_pairs]);
 
     $c->stash(
-        entities => $entities,
-        pagerank => $pagerank,
+        entities            => $c->data->get_entities($map->{id}),
+        entity_degree       => $c->data->get_entity_degrees($map->{id}),
+        entity_indegree     => $c->data->get_entity_indegrees($map->{id}),
+        entity_outdegree    => $c->data->get_entity_outdegrees($map->{id}),
+        pagerank            => $pagerank,
     );
 } => 'show_map';
 
