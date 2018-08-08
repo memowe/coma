@@ -11,7 +11,6 @@ WriteMakefile(
         'Data::Dump'                    =>  '1.23',
         'DateTime'                      =>  '1.50',
         'DateTime::Format::ISO8601'     =>  '0.08',
-        'DBIx::Class'                   =>  '0.08',
         'EventStore::Tiny'              =>  '0.41',
         'Mojolicious'                   =>  '7.88',
         'Text::Markdown'                =>  '1.0',
