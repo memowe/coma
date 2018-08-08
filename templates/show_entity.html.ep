@@ -12,24 +12,26 @@
 %= t p => (id => 'degrees') => begin
     <%= t strong => begin %>Degree:<% end %>
     <%= $degree %>
-    (in: <%= $to_degree %>, out: <%= $from_degree %>)
+    (in: <%= $indegree %>, out: <%= $outdegree %>)<br>
+    <%= t strong => begin %>Reverse Pagerank:<% end %>
+    <%= sprintf '%.4f' => $pagerank->{$entity_name} %>
 % end
 
 %# neighbourhood
 %= t 'hr'
 %= t h2 => 'Neighbourhood'
 %= t h3 => 'In'
-%= include 'entity_list', entities => $to_neighbours
+%= t div => (id => 'in_neighbours') => include 'entity_list', entities => $in_neighbours;
 %= t h3 => 'Out'
-%= include 'entity_list', entities => $from_neighbours
+%= t div => (id => 'out_neighbours') => include 'entity_list', entities => $out_neighbours;
 
 %# list all maps with this entity
 %= t 'hr'
 %= t h2 => 'All maps with this entity'
-%= t ul => begin
-% for my $map ($maps->all) {
+%= t ul => (id => 'containing_maps') => begin
+% for my $map (sort {$a->{name} cmp $b->{name}} @$rel_maps) {
     %= t li => begin
-        %= link_to $map->name => 'show_map', {map_id => $map->id}
+    %= link_to $map->{name} => 'show_map', {map_id => $map->{id}}
     % end
 % }
 % end

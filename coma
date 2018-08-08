@@ -109,50 +109,48 @@ post '/' => sub ($c) {
 # Show entity cloud
 get '/entities' => sub ($c) {
 
-    # Load entity => degree hash for all entities
-    my $entity_degree = $c->data->get_entity_degrees;
-
-    # Calculate reverse pagerank
+    # Calculate reverse connections for pagerank
     my @rev_conns = map [reverse @$_] => @{$c->data->get_connection_pairs};
-    my $entity_pr = $c->calculate_pagerank(\@rev_conns);
 
     $c->stash(
-        entities => $entity_degree,
-        pagerank => $entity_pr,
+        entities            => $c->data->get_entities,
+        entity_degree       => $c->data->get_entity_degrees,
+        entity_indegree     => $c->data->get_entity_indegrees,
+        entity_outdegree    => $c->data->get_entity_outdegrees,
+        pagerank            => $c->calculate_pagerank(\@rev_conns),
     );
 } => 'entities';
 
 # Show entity data
 get '/entity/:entity_name' => sub ($c) {
-    my $en = $c->param('entity_name');
+    my $e = $c->param('entity_name');
 
     # Try to retrieve entity
-    return $c->reply->not_found unless $c->data->has_entity($en);
+    return $c->reply->not_found unless $c->data->has_entity($e);
 
-    # Get degrees
-    my $degree      = $c->data->get_entity_degrees->{$en} // 0;
-    my $indegree    = $c->data->get_entity_indegrees->{$en} // 0;
-    my $outdegree   = $c->data->get_entity_outdegrees->{$en} // 0;
+    # Prepare degrees
+    my $entity_degree       = $c->data->get_entity_degrees;
+    my $entity_indegree     = $c->data->get_entity_indegrees;
+    my $entity_outdegree    = $c->data->get_entity_outdegrees;
 
-    # Get neighbourhood
-    my $in_neighbours   = $c->data->get_incoming_neighbourhood($en);
-    my $out_neighbours  = $c->data->get_outgoing_neighbourhood($en);
-
-    # Calculate reverse pagerank
+    # Calculate reverse connections for pagerank
     my @rev_conns = map [reverse @$_] => @{$c->data->get_connection_pairs};
-    my $pagerank  = $c->calculate_pagerank(\@rev_conns);
 
-    # Find all maps with this entity
-    my $map_ids = $c->data->get_map_ids_with_entity($en);
+    # Calculate related maps
+    my $rel_map_ids = $c->data->get_map_ids_with_entity($e);
+    my @rel_maps = map $c->data->get_map_data($_) => @$rel_map_ids;
 
     $c->stash(
-        degree          => $degree,
-        indegree        => $indegree,
-        outdegree       => $outdegree,
-        in_neighbours   => $in_neighbours,
-        out_neighbours  => $out_neighbours,
-        pagerank        => $pagerank,
-        map_ids         => $map_ids,
+        degree              => $entity_degree->{$e}     // 0,
+        indegree            => $entity_indegree->{$e}   // 0,
+        outdegree           => $entity_outdegree->{$e}  // 0,
+        in_neighbours       => $c->data->get_incoming_neighbourhood($e),
+        out_neighbours      => $c->data->get_outgoing_neighbourhood($e),
+        rel_maps            => \@rel_maps,
+        entity_degree       => $entity_degree,
+        entity_indegree     => $entity_indegree,
+        entity_outdegree    => $entity_outdegree,
+        pagerank            => $c->calculate_pagerank(\@rev_conns),
     );
 } => 'show_entity';
 
