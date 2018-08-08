@@ -51,9 +51,9 @@ helper markdown => sub ($c, $text) {
 
 # Pagerank helper: expects LoL of vertex names
 # Returns a hash ref name => PR
-helper calculate_pagerank => sub ($c, @graph) {
+helper calculate_pagerank => sub ($c, $graph) {
     state $pr = Graph::Centrality::Pagerank->new();
-    return $pr->getPagerankOfNodes(listOfEdges => \@graph);
+    return $pr->getPagerankOfNodes(listOfEdges => $graph);
 };
 
 # Completion helper: expects a callback returning a source data list
