@@ -92,7 +92,6 @@ sub add_map ($self, $data) {
         description => $data->{description},
     });
 
-    # Done
     return $id;
 }
 
@@ -121,7 +120,6 @@ sub update_map_data ($self, $id, $data) {
     # Update only what's given
     $map->{$_} = $data->{$_} for keys %$data;
 
-    # Done
     $self->events->store_event(MapDataUpdated => $map);
 }
 
@@ -131,7 +129,6 @@ sub remove_map ($self, $id) {
     die "Unknown map: $id\n"
         unless exists $self->_get('maps')->{$id};
 
-    # Done
     $self->events->store_event(MapRemoved => {id => $id});
 }
 
@@ -153,7 +150,6 @@ sub add_connection ($self, $map_id, $data) {
         to      => $data->{to},
     });
 
-    # Done
     return $id;
 }
 
@@ -168,7 +164,6 @@ sub update_connection ($self, $map_id, $id, $data) {
     # Update only what's given
     $connection->{$_} = $data->{$_} for keys %$data;
 
-    # Done
     $self->events->store_event(ConnectionUpdated => $connection);
 }
 
@@ -180,7 +175,6 @@ sub remove_connection ($self, $map_id, $id) {
     die "Unknown connection: $map_id/$id\n"
         unless defined $map->{connections}{$id};
 
-    # Done
     $self->events->store_event(ConnectionRemoved => {
         map => $map_id,
         id  => $id,
@@ -202,7 +196,6 @@ sub _get_maps ($self, $map_id = undef) {
         @maps = map {$self->get_map_data($_)} @{$self->get_all_map_ids};
     }
 
-    # Done
     return \@maps;
 }
 
@@ -234,7 +227,6 @@ sub get_connections ($self, $map_id = undef) {
         ||  $a->{type} cmp $b->{type}
     } @cs;
 
-    # Done
     return \@cs;
 };
 
@@ -247,7 +239,6 @@ sub get_connection_types ($self, $map_id = undef) {
     my %type_count;
     $type_count{$_}++ for @types;
 
-    # Done
     return \%type_count;
 }
 
@@ -280,7 +271,6 @@ sub _get_entity_degrees ($self, $type, $map_id = undef) {
         }
     }
 
-    # Done
     return \%degree;
 }
 
@@ -311,7 +301,6 @@ sub _get_neighbourhood ($self, $type, $entity, $map_id = undef) {
                 and $c->{from} eq $entity;
     }
 
-    # Done
     return [sort keys %entities];
 }
 
@@ -337,7 +326,6 @@ sub get_map_tgf ($self, $map_id) {
     my $cs = $self->get_connections($map_id);
     $tgf .= "$entity_id{$_->{from}} $entity_id{$_->{to}} $_->{type}\n" for @$cs;
 
-    # Done
     return $tgf;
 }
 
@@ -376,7 +364,6 @@ sub add_map_from_tgf ($self, $name, $description, $tgf) {
     # Add connections
     $self->add_connection($map_id, $_) for @cs;
 
-    # Done
     return $map_id;
 }
 

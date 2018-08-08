@@ -91,7 +91,6 @@ get '/' => sub ($c) {
     my $map_ids = $c->data->get_all_map_ids;
     my @maps    = map {$c->data->get_map_data($_)} @$map_ids;
 
-    # Done
     $c->stash(maps => \@maps);
 } => 'home';
 
@@ -104,7 +103,6 @@ post '/' => sub ($c) {
         description => $c->param('description'),
     });
 
-    # Done
     $c->redirect_to('show_map', map_id => $map_id);
 } => 'add_map';
 
@@ -118,7 +116,6 @@ get '/entities' => sub ($c) {
     my @rev_conns = map [reverse @$_] => @{$c->data->get_connection_pairs};
     my $entity_pr = $c->calculate_pagerank(\@rev_conns);
 
-    # Done
     $c->stash(
         entities => $entity_degree,
         pagerank => $entity_pr,
@@ -148,7 +145,6 @@ get '/entity/:entity_name' => sub ($c) {
     # Find all maps with this entity
     my $map_ids = $c->data->get_map_ids_with_entity($en);
 
-    # Done
     $c->stash(
         degree          => $degree,
         indegree        => $indegree,
@@ -183,7 +179,6 @@ get '/' => sub ($c) {
     my $conn_pairs  = $c->data->get_connection_pairs($map->{id});
     my $pagerank    = $c->calculate_pagerank([reverse @$conn_pairs]);
 
-    # Done
     $c->stash(
         entities => $entities,
         pagerank => $pagerank,
@@ -200,7 +195,6 @@ post '/edit' => sub ($c) {
         description => $c->param('description'),
     });
 
-    # Done
     $c->redirect_to('show_map');
 } => 'edit_map';
 
@@ -215,7 +209,6 @@ post '/' => sub ($c) {
         to      => trim($c->param('to')),
     });
 
-    # Done
     $c->redirect_to('show_map');
 } => 'add_connection';
 
@@ -232,7 +225,6 @@ post '/delete_connection' => sub ($c) {
     # Delete
     $c->data->remove_connection($map->{id}, $c_id);
 
-    # Done
     $c->redirect_to('show_map');
 };
 
@@ -246,7 +238,6 @@ post '/delete_sure' => sub ($c) {
     my $map = $c->stash('map');
     $c->data->remove_map($map->{id});
 
-    # Done
     $c->redirect_to('home');
 } => 'delete_map_sure';
 

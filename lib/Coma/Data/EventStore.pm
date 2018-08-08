@@ -13,7 +13,6 @@ has _est => sub ($self) {
         : EventStore::Tiny->new;
     $store->cache_distance(0);
 
-    # Done
     return $store;
 };
 
