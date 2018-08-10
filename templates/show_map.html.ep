@@ -52,7 +52,7 @@ renderer.draw();
 %# enter a connection form
 %= t 'hr'
 %= t h2 => 'New connection'
-%= form_for 'add_connection' => begin
+%= form_for 'add_connection' => (id => 'add_connection') => begin
     %= text_field from => '', id => 'from'
     &mdash;<%= text_field type => '', id => 'type' %>→
     %= text_field to   => '', id => 'to'
@@ -93,10 +93,8 @@ $(function() {
 % } values %{$map->{connections}};
 % for my $conn (@sorted_conn) {
     %= t li => begin
-        %= form_for delete_connection => begin
-            %= hidden_field from => $conn->{from}
-            %= hidden_field type => $conn->{type}
-            %= hidden_field to   => $conn->{to}
+    %= form_for delete_connection => (class => 'delete_connection') => begin
+            %= hidden_field connection_id => $conn->{id}
             %= link_to show_entity => {entity_name => $conn->{from}} => begin
                 %= t strong => $conn->{from}
             % end
@@ -110,10 +108,10 @@ $(function() {
 % }
 % end
 
-%# edit meta data
+%# edit map data
 %= t 'hr'
-%= t h2 => 'Edit meta data'
-%= form_for edit_map => begin
+%= t h2 => 'Edit map data'
+%= form_for edit_map => (id => 'edit_map') => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
             %= text_field name => (id => 'name', value => $map->{name})
@@ -128,13 +126,13 @@ $(function() {
 %# tgf export
 %= t 'hr'
 %= t h2 => 'TGF Export'
-%= form_for tgf_export => begin
+%= form_for tgf_export => (id => 'tgf_export') => begin
     %= submit_button 'Download'
 %= end
 
 %# delete this map?
 %= t 'hr'
 %= t h2 => 'Delete this map'
-%= form_for delete_map => begin
+%= form_for delete_map => (id => 'delete_map') => begin
     %= submit_button 'Do it'
 % end

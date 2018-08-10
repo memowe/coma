@@ -61,6 +61,7 @@ subtest 'Map handling' => sub {
         $model->update_map_data($map_id, {
             name        => 'baz',
             description => 'quux',
+            foo         => 'bar',
         });
 
         # Check map list
@@ -133,6 +134,7 @@ subtest 'Connection handling' => sub {
             from    => 'A',
             type    => 'to',
             to      => 'B',
+            foo     => 'bar',
         });
 
         # Check if the only connection has changed

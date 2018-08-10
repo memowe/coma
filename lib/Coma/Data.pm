@@ -117,10 +117,12 @@ sub update_map_data ($self, $id, $data) {
     my $map = $self->_get('maps')->{$id};
     die "Unknown map: $id\n" unless defined $map;
 
-    # Update only what's given
-    $map->{$_} = $data->{$_} for keys %$data;
+    # Use/update only relevant data
+    my $update = {map {
+        $_ => $data->{$_} // $map->{$_}
+    } qw(id name description)};
 
-    $self->events->store_event(MapDataUpdated => $map);
+    $self->events->store_event(MapDataUpdated => $update);
 }
 
 sub remove_map ($self, $id) {
@@ -161,10 +163,12 @@ sub update_connection ($self, $map_id, $id, $data) {
     my $connection = $map->{connections}{$id};
     die "Unknown connection: $map_id/$id\n" unless defined $connection;
 
-    # Update only what's given
-    $connection->{$_} = $data->{$_} for keys %$data;
+    # Use/update only relevant data
+    my $update = {map {
+        $_ => $data->{$_} // $connection->{$_}
+    } qw(id map type from to)};
 
-    $self->events->store_event(ConnectionUpdated => $connection);
+    $self->events->store_event(ConnectionUpdated => $update);
 }
 
 sub remove_connection ($self, $map_id, $id) {

@@ -36,7 +36,7 @@
 %# add a map
 %= t 'hr'
 %= t h2 => 'Add a map'
-%= form_for add_map => begin
+%= form_for add_map => (id => 'add_map') => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
             %= text_field name => (id => 'name')
