@@ -184,7 +184,7 @@ get '/' => sub ($c) {
 } => 'show_map';
 
 # Edit map meta data
-post '/edit' => sub ($c) {
+post '/' => sub ($c) {
     my $map = $c->stash('map');
 
     # Update map meta data
@@ -197,7 +197,7 @@ post '/edit' => sub ($c) {
 } => 'edit_map';
 
 # Add a connection
-post '/' => sub ($c) {
+post '/add_connection' => sub ($c) {
     my $map = $c->stash('map');
 
     # Insert a new connection for this map
@@ -208,7 +208,7 @@ post '/' => sub ($c) {
     });
 
     $c->redirect_to('show_map');
-} => 'add_connection';
+};
 
 # Delete a connection
 post '/delete_connection' => sub ($c) {
