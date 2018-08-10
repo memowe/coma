@@ -34,7 +34,7 @@ Mojo::IOLoop->recurring(5 => sub ($loop) {
 # Inject mojolicious log as a logger into the data model
 app->data->logger(sub ($event) {
     my $data = $event->can('data') ? dump $event->data : 'NO DATA';
-    app->log->info('New event ' . $event->name . ": $data");
+    app->log->debug('New event: ' . $event->summary);
 });
 
 # Empty? Read init data tgf files into data model
