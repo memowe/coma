@@ -1,12 +1,12 @@
 % layout 'default';
-% my $title = 'Map ' . $map->name;
+% my $title = 'Map ' . $map->{name};
 % title $title, breadcrumbs => [[Home => 'home'], $title];
 %= t h1 => $title
 
 %# map description
 %= t 'hr'
 %= t div => (id => 'description') => begin
-    %== markdown $map->description
+    %== markdown $map->{description}
 % end
 
 %# visualization container
@@ -21,9 +21,9 @@ $(function() {
 var g = new Graph();
 
 %# add all nodes
-% for my $e ($entities->all) {
-%   my $url = url_for 'show_entity', entity_name => $e->name;
-    g.addNode("<%= quotemeta $e->name %>", {render: function(raphael, node) {
+% for my $e (@$entities) {
+%   my $url = url_for 'show_entity', entity_name => $e;
+    g.addNode("<%= quotemeta $e %>", {render: function(raphael, node) {
         var shape = Graph.Renderer.defaultRenderFunc(raphael, node);
         shape.dblclick(function() {
             window.location.href = '<%= $url %>';
@@ -33,10 +33,10 @@ var g = new Graph();
 % }
 
 %# add all edges
-% for my $conn ($map->connections->all) {
+% for my $conn (values %{$map->{connections}}) {
     g.addEdge(
-        "<%= quotemeta $conn->from_name %>", "<%= quotemeta $conn->to_name %>",
-        {label: "<%= quotemeta $conn->type %>", directed: true});
+        "<%= quotemeta $conn->{from} %>", "<%= quotemeta $conn->{to} %>",
+        {label: "<%= quotemeta $conn->{type} %>", directed: true});
 % }
 
 %# draw that shizzle
@@ -52,7 +52,7 @@ renderer.draw();
 %# enter a connection form
 %= t 'hr'
 %= t h2 => 'New connection'
-%= form_for 'add_connection' => begin
+%= form_for 'add_connection' => (id => 'add_connection') => begin
     %= text_field from => '', id => 'from'
     &mdash;<%= text_field type => '', id => 'type' %>→
     %= text_field to   => '', id => 'to'
@@ -78,7 +78,7 @@ $(function() {
 
 %= t 'hr'
 %= t h2 => 'Entity cloud'
-%= include 'pagerank';
+%= include 'entity_cloud';
 
 %= t 'hr'
 %= t h2 => 'Entities'
@@ -87,19 +87,20 @@ $(function() {
 %# dump connections
 %= t 'hr'
 %= t h2 => 'Connections'
-%= t ol => begin
-% for my $conn ($map->connections->all) {
+%= t ol => (id => 'connections') => begin
+% my @sorted_conn = sort {
+%   $a->{from} cmp $b->{from} or $a->{to} cmp $b->{to}
+% } values %{$map->{connections}};
+% for my $conn (@sorted_conn) {
     %= t li => begin
-        %= form_for delete_connection => begin
-            %= hidden_field from => $conn->from_name
-            %= hidden_field type => $conn->type
-            %= hidden_field to   => $conn->to_name
-            %= link_to show_entity => {entity_name => $conn->from_name} => begin
-                %= t strong => $conn->from_name
+    %= form_for delete_connection => (class => 'delete_connection') => begin
+            %= hidden_field connection_id => $conn->{id}
+            %= link_to show_entity => {entity_name => $conn->{from}} => begin
+                %= t strong => $conn->{from}
             % end
-            %= $conn->type
-            %= link_to show_entity => {entity_name => $conn->to_name} => begin
-                %= t strong => $conn->to_name
+            %= $conn->{type}
+            %= link_to show_entity => {entity_name => $conn->{to}} => begin
+                %= t strong => $conn->{to}
             % end
             %= submit_button 'x'
         % end
@@ -107,16 +108,16 @@ $(function() {
 % }
 % end
 
-%# edit meta data
+%# edit map data
 %= t 'hr'
-%= t h2 => 'Edit meta data'
-%= form_for edit_map => begin
+%= t h2 => 'Edit map data'
+%= form_for edit_map => (id => 'edit_map') => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
-            %= text_field name => (id => 'name', value => $map->name)
+            %= text_field name => (id => 'name', value => $map->{name})
         </td></tr>
         <tr><th><%= label_for description => 'description' %></th><td>
-            <%= text_area description => (rows => 3, cols => 60) => begin %><%= $map->description =%><% end %>
+            <%= text_area description => (rows => 3, cols => 60) => begin %><%= $map->{description} =%><% end %>
         </td></tr>
     </table>
     %= submit_button 'Edit'
@@ -125,13 +126,13 @@ $(function() {
 %# tgf export
 %= t 'hr'
 %= t h2 => 'TGF Export'
-%= form_for tgf_export => begin
+%= form_for tgf_export => (id => 'tgf_export') => begin
     %= submit_button 'Download'
 %= end
 
 %# delete this map?
 %= t 'hr'
 %= t h2 => 'Delete this map'
-%= form_for delete_map => begin
+%= form_for delete_map => (id => 'delete_map') => begin
     %= submit_button 'Do it'
 % end

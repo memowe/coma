@@ -1,30 +1,36 @@
-<table class="neighbours">
-    <thead><tr>
-        <th>Entity</th>
-        <th>Reverse Pagerank</th>
-        <th>Degree</th>
-    </tr></thead>
-    <tbody>
-% my @pr_sorted_entities = sort {
-%   $pagerank->{$a->name} <=> $pagerank->{$b->name}
-% } $entities->all;
-% for my $e (reverse @pr_sorted_entities) {
-        <tr>
-            <th><%= link_to $e->name => show_entity => {entity_name => $e->name} %></th>
-            <td><%= sprintf '%.4f' => $pagerank->{$e->name} %></td>
-            <td>
-                <%= $e->degree %>
-                (in: <%= $e->to_degrees->get_column('to_degree')->first // 0 %>, out: <%= $e->from_degrees->get_column('from_degree')->first // 0 %>)
-            </td>
-        </tr>
+% if (@$entities) {
+    <table class="entity_list">
+        <thead><tr>
+            <th>Entity</th>
+            <th>Reverse Pagerank</th>
+            <th>Degree</th>
+        </tr></thead>
+        <tbody>
+    % my @pr_sorted_entities = sort {
+    %   $pagerank->{$a} <=> $pagerank->{$b}
+    % } @$entities;
+    % for my $e (reverse @pr_sorted_entities) {
+            <tr>
+                <th><%= link_to $e => show_entity => {entity_name => $e} %></th>
+                <td><%= sprintf '%.4f' => $pagerank->{$e} %></td>
+                <td>
+                    <%= $entity_degree->{$e} %>
+                    (in: <%= $entity_indegree->{$e} // 0 %>, out: <%= $entity_outdegree->{$e} // 0 %>)
+                </td>
+            </tr>
+    % }
+        </tbody>
+    </table>
 % }
-    </tbody>
-</table>
+% else {
+    <p>No entries</p>
+% }
+
 %= stylesheet begin
-table.neighbours {
+table.entity_list {
     border-spacing: .5ex;
 }
-table.neighbours th, table.neighbours td {
+table.entity_list th, table.entity_list td {
     border  : thin inset lightgray;
     padding : .5ex 1em;
 }

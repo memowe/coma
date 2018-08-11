@@ -1,0 +1,22 @@
+%# entity cloud, sorted by name
+%= t p => 'Big entities have a high pagerank. Hover for details.'
+%= t div => (id => 'entity_cloud') => begin
+    % for my $e (sort {$a cmp $b} @$entities) {
+        % my $pr    = $pagerank->{$e};
+        % my $size  = (1 + $pr * 20) . 'em';
+        % my $style = "font-size: $size";
+        % my $title = sprintf 'degree: %d, pagerank: %.3f', $entity_degree->{$e}, $pr;
+        %= link_to show_entity => {entity_name => $e} => begin
+            <%= t span => (style => $style, title => $title) => $e =%>
+        % end
+    % }
+% end
+%= stylesheet begin
+#entity_cloud a {
+    margin          : 0 1em;
+    text-decoration : none;
+}
+#entity_cloud a:hover {
+    text-decoration : underline;
+}
+% end

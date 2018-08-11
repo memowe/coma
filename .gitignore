@@ -3,9 +3,9 @@
 *.sw[a-p]
 Makefile.old
 
-# database files
-data/graph.sqlite
-t/graph.sqlite
+# data storage file
+data/data
 
 # exported graph representation files
 export/*.tgf
+export/*/*.tgf

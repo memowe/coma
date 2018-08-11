@@ -8,7 +8,7 @@
 
 %= t 'hr'
 %= t h2 => 'Entity cloud'
-%= include 'pagerank';
+%= include 'entity_cloud';
 
 %= t 'hr'
 %= t h2 => 'Entity list'
