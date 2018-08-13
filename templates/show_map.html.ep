@@ -1,19 +1,19 @@
 % layout 'default';
 % my $title = 'Map ' . $map->{name};
 % title $title, breadcrumbs => [[Home => 'home'], $title];
-%= t h1 => $title
+<h1><%= $title %></h1>
 
 %# map description
-%= t 'hr'
-%= t div => (id => 'description') => begin
+<hr />
+<div id="description">
     %== markdown $map->{description}
-% end
+</div>
 
 %# visualization container
-%= t 'hr'
-%= t h2 => 'Visualization'
-%= t p => 'Double click to view entity details!'
-%= t div => (id => 'canvas')
+<hr />
+<h2>Visualization</h2>
+<p>Double click to view entity details!</p>
+<div id="canvas"></div>
 
 %# visualize: may the javascript begin
 %= javascript begin
@@ -50,8 +50,8 @@ renderer.draw();
 % end
 
 %# enter a connection form
-%= t 'hr'
-%= t h2 => 'New connection'
+<hr />
+<h2>New connection</h2>
 %= form_for 'add_connection' => (id => 'add_connection') => begin
     %= text_field from => '', id => 'from'
     &mdash;<%= text_field type => '', id => 'type' %>→
@@ -76,41 +76,42 @@ $(function() {
 });
 % end
 
-%= t 'hr'
-%= t h2 => 'Entity cloud'
-%= include 'entity_cloud';
+%# entity cloud
+<hr />
+<h2>Entity cloud</h2>
+%= include 'entity_cloud'
 
-%= t 'hr'
-%= t h2 => 'Entities'
+<hr />
+<h2>Entities</h2>
 %= include 'entity_list'
 
 %# dump connections
-%= t 'hr'
-%= t h2 => 'Connections'
-%= t ol => (id => 'connections') => begin
+<hr />
+<h2>Connections</h2>
+<ol id="connections">
 % my @sorted_conn = sort {
 %   $a->{from} cmp $b->{from} or $a->{to} cmp $b->{to}
 % } values %{$map->{connections}};
 % for my $conn (@sorted_conn) {
-    %= t li => begin
+    <li>
     %= form_for delete_connection => (class => 'delete_connection') => begin
-            %= hidden_field connection_id => $conn->{id}
-            %= link_to show_entity => {entity_name => $conn->{from}} => begin
-                %= t strong => $conn->{from}
-            % end
-            %= $conn->{type}
-            %= link_to show_entity => {entity_name => $conn->{to}} => begin
-                %= t strong => $conn->{to}
-            % end
-            %= submit_button 'x'
+        %= hidden_field connection_id => $conn->{id}
+        %= link_to show_entity => {entity_name => $conn->{from}} => begin
+            <strong><%= $conn->{from} %></strong>
         % end
+        %= $conn->{type}
+        %= link_to show_entity => {entity_name => $conn->{to}} => begin
+            <strong><%= $conn->{to} %></strong>
+        % end
+        %= submit_button 'x'
     % end
+    </li>
 % }
-% end
+</ol>
 
 %# edit map data
-%= t 'hr'
-%= t h2 => 'Edit map data'
+<hr />
+<h2>Edit map data</h2>
 %= form_for edit_map => (id => 'edit_map') => begin
     <table>
         <tr><th><%= label_for name => 'name' %></th><td>
@@ -124,15 +125,15 @@ $(function() {
 % end
 
 %# tgf export
-%= t 'hr'
-%= t h2 => 'TGF Export'
+<hr />
+<h2>TGF export</h2>
 %= form_for tgf_export => (id => 'tgf_export') => begin
     %= submit_button 'Download'
 %= end
 
 %# delete this map?
-%= t 'hr'
-%= t h2 => 'Delete this map'
+<hr />
+<h2>Delete this map</h2>
 %= form_for delete_map => (id => 'delete_map') => begin
     %= submit_button 'Do it'
 % end

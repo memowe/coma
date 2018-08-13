@@ -3,8 +3,8 @@
 %   ref $_ eq 'ARRAY' ? link_to @$_ : t strong => $_
 % } @{stash('breadcrumbs') // []};
 % if (@linklist) {
-    %= t div => (id => 'breadcrumb') => begin
-        %= t strong => 'Navigation:'
+    <div id="breadcrumb">
+        <strong>Navigation</strong>:
         %== join ' » ' => @linklist
-    % end
+    </div>
 % }

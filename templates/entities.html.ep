@@ -4,12 +4,14 @@
 %   [Home => 'home'],
 %   'Entities',
 % ];
-%= t h1 => $title
+<h1><%= $title %></h1>
 
-%= t 'hr'
-%= t h2 => 'Entity cloud'
+<hr/>
+
+<h2>Entity cloud</h2>
 %= include 'entity_cloud';
 
-%= t 'hr'
-%= t h2 => 'Entity list'
+<hr />
+
+<h2>Entity list</h2>
 %= include 'entity_list'

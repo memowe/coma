@@ -5,33 +5,36 @@
 %   [Entities => 'entities'],
 %   $title,
 % ];
-%= t h1 => $title
+<h1><%= $title %></h1>
 
 %# degrees
-%= t 'hr'
-%= t p => (id => 'degrees') => begin
-    <%= t strong => begin %>Degree:<% end %>
-    <%= $degree %>
+<hr />
+<p id="degrees">
+    <strong>Degree</strong>: <%= $degree %>
     (in: <%= $indegree %>, out: <%= $outdegree %>)<br>
-    <%= t strong => begin %>Reverse Pagerank:<% end %>
+    <strong>Reverse Pagerank</strong>:
     <%= sprintf '%.4f' => $pagerank->{$entity_name} %>
-% end
+</p>
 
 %# neighbourhood
-%= t 'hr'
-%= t h2 => 'Neighbourhood'
-%= t h3 => 'In'
-%= t div => (id => 'in_neighbours') => include 'entity_list', entities => $in_neighbours;
-%= t h3 => 'Out'
-%= t div => (id => 'out_neighbours') => include 'entity_list', entities => $out_neighbours;
+<hr />
+<h2>Neighbourhood</h2>
+<h3>In</h3>
+<div id="in_neighbours">
+    %= include 'entity_list', entities => $in_neighbours;
+</div>
+<h3>Out</h3>
+<div id="out_neighbours">
+    %= include 'entity_list', entities => $out_neighbours;
+</div>
 
 %# list all maps with this entity
-%= t 'hr'
-%= t h2 => 'All maps with this entity'
-%= t ul => (id => 'containing_maps') => begin
+<hr />
+<h2>All maps with this entity</h2>
+<ul id="containing_maps">
 % for my $map (sort {$a->{name} cmp $b->{name}} @$rel_maps) {
-    %= t li => begin
-    %= link_to $map->{name} => 'show_map', {map_id => $map->{id}}
-    % end
+    <li>
+        %= link_to $map->{name} => 'show_map', {map_id => $map->{id}}
+    </li>
 % }
-% end
+</ul>
