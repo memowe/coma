@@ -101,7 +101,7 @@ sub get_map_data ($self, $id) {
     my $map = $self->_get('maps')->{$id};
     die "Unknown map: $id\n" unless defined $map;
 
-    # found
+    # Found
     return $map;
 }
 
@@ -236,7 +236,7 @@ sub get_connections ($self, $map_id = undef) {
 
 sub get_connection_types ($self, $map_id = undef) {
 
-    # extract types with duplicates
+    # Extract types with duplicates
     my @types = map {$_->{type}} @{$self->get_connections($map_id)};
 
     # Sum occurrences

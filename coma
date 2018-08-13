@@ -248,8 +248,8 @@ get '/tgf_export' => sub ($c) {
 
     # Prepare filename
     my $name = $map->{name};
-    $name =~ s/[\s-]+/_/g;      # whitespaces/dashes -> underscore
-    $name =~ s/[^a-z0-9]//ig;   # delete non-trivial characters
+    $name =~ s/[\s-]+/_/g;      # Whitespaces/dashes -> underscore
+    $name =~ s/[^a-z0-9]//ig;   # Delete non-trivial characters
     my $fn = 'map_' . $name . '_' . $map->{id} . '.tgf';
 
     # Force download

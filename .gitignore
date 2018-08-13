@@ -3,9 +3,9 @@
 *.sw[a-p]
 Makefile.old
 
-# data storage file
+# Data storage file
 data/data
 
-# exported graph representation files
+# Exported graph representation files
 export/*.tgf
 export/*/*.tgf
