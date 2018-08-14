@@ -183,6 +183,14 @@ get '/' => sub ($c) {
     );
 } => 'show_map';
 
+# Deliver map data via JSON
+get '/entities' => [format => 'json'] => sub ($c) {
+    $c->render(json => $c->data->get_entities($c->stash('map')->{id}));
+} => 'map_entities';
+get '/connections' => [format => 'json'] => sub ($c) {
+    $c->render(json => [values %{$c->stash('map')->{connections}}]);
+} => 'map_connections';
+
 # Edit map meta data
 post '/' => sub ($c) {
     my $map = $c->stash('map');
