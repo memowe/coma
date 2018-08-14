@@ -17,35 +17,9 @@
 
 %# visualize: may the javascript begin
 %= javascript begin
-$(function() {
-var g = new Graph();
 
-%# add all nodes
-% for my $e (@$entities) {
-%   my $url = url_for 'show_entity', entity_name => $e;
-    g.addNode("<%= quotemeta $e %>", {render: function(raphael, node) {
-        var shape = Graph.Renderer.defaultRenderFunc(raphael, node);
-        shape.dblclick(function() {
-            window.location.href = '<%= $url %>';
-        });
-        return shape;
-    }});
-% }
 
-%# add all edges
-% for my $conn (values %{$map->{connections}}) {
-    g.addEdge(
-        "<%= quotemeta $conn->{from} %>", "<%= quotemeta $conn->{to} %>",
-        {label: "<%= quotemeta $conn->{type} %>", directed: true});
-% }
 
-%# draw that shizzle
-var layouter = new Graph.Layout.Spring(g);
-layouter.layout();
-var renderer = new Graph.Renderer.Raphael('canvas', g, 1200, 600);
-renderer.draw();
-
-});
 %# end of javascript
 % end
 
