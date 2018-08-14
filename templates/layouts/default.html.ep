@@ -5,6 +5,7 @@
     %= javascript '/jquery.js'
     %= javascript '/jquery-ui.js'
     %= stylesheet '/jquery-ui.css'
+    %= javascript '/d3.js'
 </head>
 <body>
 %= include 'breadcrumbs'
