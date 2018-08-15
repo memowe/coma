@@ -27,17 +27,18 @@ my $con_id = $t->app->data->add_connection($map_id, {
 
 subtest 'Entity data' => sub {
     $t->get_ok("/map/$map_id/entities.json");
-    is_deeply $t->tx->res->json => ['baz', 'quuux'], 'Correct entities';
+    is_deeply $t->tx->res->json => [
+        {name => 'baz',     pagerank => 0.649122806021908},
+        {name => 'quuux',   pagerank => 0.350877193978092},
+    ], 'Correct entities';
 };
 
 subtest 'Connection data' => sub {
     $t->get_ok("/map/$map_id/connections.json");
     is_deeply $t->tx->res->json => [{
-        from    => 'baz',
+        source  => 'baz',
         type    => 'quux',
-        to      => 'quuux',
-        id      => $con_id,
-        map     => $map_id,
+        target  => 'quuux',
     }], 'Correction connection data';
 };
 
