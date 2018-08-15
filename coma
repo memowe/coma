@@ -185,12 +185,13 @@ get '/' => sub ($c) {
     );
 } => 'show_map';
 
-# Deliver map data via JSON
+# Deliver map data via JSON in a D3 friendly format
 # as an array of hashes {name => NAME, pagerank => PR}
-get '/entities' => [format => 'json'] => sub ($c) {
+get '/d3_map_data' => [format => 'json'] => sub ($c) {
+    my $map_data = $c->stash('map');
 
     # Calculate reverse pagerank (and derive entities)
-    my $conn_pairs  = $c->data->get_connection_pairs($c->stash('map')->{id});
+    my $conn_pairs  = $c->data->get_connection_pairs($map_data->{id});
     my $pagerank    = $c->calculate_pagerank([
         map [reverse @$_] => @$conn_pairs
     ]);
@@ -201,23 +202,19 @@ get '/entities' => [format => 'json'] => sub ($c) {
         pagerank    => $pagerank->{$_},
     }} sort keys %$pagerank;
 
-    $c->render(json => \@entity_data);
-} => 'map_entities';
-
-# Deliver connection data via JSON
-# in D3 usable format ({source, target, [name]})
-get '/connections' => [format => 'json'] => sub ($c) {
-
     # Rebuild connection structures
-    my @connections = values %{$c->stash('map')->{connections}};
+    my @connections = values %{$map_data->{connections}};
     my @conn_data   = map {{
         source  => $_->{from},
         target  => $_->{to},
         type    => $_->{type},
     }} @connections;
 
-    $c->render(json => \@conn_data);
-} => 'map_connections';
+    $c->render(json => {
+        nodes => \@entity_data,
+        links => \@conn_data,
+    });
+} => 'd3_map_data';
 
 # Edit map meta data
 post '/' => sub ($c) {

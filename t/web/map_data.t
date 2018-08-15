@@ -25,22 +25,20 @@ my $con_id = $t->app->data->add_connection($map_id, {
     to      => 'quuux',
 });
 
-subtest 'Entity data' => sub {
-    $t->get_ok("/map/$map_id/entities.json");
-    is_deeply $t->tx->res->json => [
-        {name => 'baz',     pagerank => 0.649122806021908},
-        {name => 'quuux',   pagerank => 0.350877193978092},
-    ], 'Correct entities';
-};
+$t->get_ok("/map/$map_id/d3_map_data.json");
 
-subtest 'Connection data' => sub {
-    $t->get_ok("/map/$map_id/connections.json");
-    is_deeply $t->tx->res->json => [{
-        source  => 'baz',
-        type    => 'quux',
-        target  => 'quuux',
-    }], 'Correction connection data';
-};
+ok keys %{$t->tx->res->json} == 2, 'Correct data size';
+
+is_deeply $t->tx->res->json->{nodes} => [
+    {name => 'baz',     pagerank => 0.649122806021908},
+    {name => 'quuux',   pagerank => 0.350877193978092},
+], 'Correct entities';
+
+is_deeply $t->tx->res->json->{links} => [{
+    source  => 'baz',
+    type    => 'quux',
+    target  => 'quuux',
+}], 'Correction connections';
 
 done_testing;
 

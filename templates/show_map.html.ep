@@ -17,8 +17,6 @@
 </svg>
 
 %# FORCE-DIRECTED GRAPH VISUALIZATION
-% my $ent_url  = url_for map_entities      => (format => 'json');
-% my $conn_url = url_for map_connections   => (format => 'json');
 %= javascript begin
 
 var canvas  = d3.select('svg#canvas');
@@ -37,51 +35,47 @@ var lLine       = 1;
 var lCol        = 'black';
 
 // Fetch data via JSON
-Promise.all([
-    d3.json('<%= $ent_url  %>'),
-    d3.json('<%= $conn_url %>')
-]).then((values) => {
-    var entities = values[0], connections = values[1];
+d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
 
     // A group for all entities
-    var entity = canvas.append('g').attr('id', 'entity_group');
+    var nodes = canvas.append('g').attr('id', 'entity_group');
 
     // A group for each entity
-    var entity_group = entity.selectAll('g.entity').data(entities)
+    var nodes_group = nodes.selectAll('g.entity').data(data.nodes)
         .enter().append('g').attr('class', 'entity');
 
     // Entity circles
-    entity_group.append('circle')
+    nodes_group.append('circle')
         .attr('stroke', eBorderCol).attr('stroke-width', eBorder)
         .attr('fill', eCol).attr('r', eWidth/2);
 
     // Entity text labels
-    entity_group.append('text').text((d) => d.name)
+    nodes_group.append('text').text((d) => d.name)
         .attr('width', eBoxWidth).attr('height', eBoxHeight)
         .attr('text-anchor', 'middle').attr('alignment-baseline', 'middle')
         .attr('font-family', 'sans-serif').attr('font-size', '' + (eWidth / 3) + 'px').attr('fill', eTextCol);
 
     // Links for each connection
     var links = canvas.append('g').attr('id', 'link_group');
-    links.selectAll('line').data(connections)
+    links.selectAll('line').data(data.links)
         .enter().append('line').attr('class', 'link')
         .attr('stroke', lCol).attr('stroke-width', lLine);
 
     // May the force be with us
-    d3.forceSimulation()
-        .nodes(entities)
+    simulation
+        .nodes(data.nodes)
         .force('chargeForce', d3.forceManyBody())
         .force('centerForce', d3.forceCenter(width/2, height/2))
-        .force('linkForce',   d3.forceLink(connections).id((d) => d.name))
+        .force('linkForce',   d3.forceLink(data.links).id((d) => d.name))
         .on('tick', () => {
 
             // Circles
-            entity_group.selectAll('circle')
+            nodes_group.selectAll('circle')
                 .attr('cx', (d) => d.x)
                 .attr('cy', (d) => d.y);
 
             // Labels
-            entity_group.selectAll('text')
+            nodes_group.selectAll('text')
                 .attr('x', (d) => d.x)
                 .attr('y', (d) => d.y);
 
