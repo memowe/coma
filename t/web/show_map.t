@@ -69,10 +69,10 @@ subtest 'Entity table' => sub {
         # Retrieve data row texts as an array of strings
         my $data = $table_data->map(sub {no_ws($_->all_text)})->to_array;
         is_deeply $data => [
-            'letter 0.4121 1 (in: 1, out: 0)',
-            'b 0.3377 3 (in: 2, out: 1)',
-            'digit 0.1251 1 (in: 0, out: 1)',
-            'a 0.1251 1 (in: 0, out: 1)',
+            'b 0.2880 3 (in: 2, out: 1)',
+            'digit 0.2781 1 (in: 0, out: 1)',
+            'a 0.2781 1 (in: 0, out: 1)',
+            'letter 0.1557 1 (in: 1, out: 0)',
         ], 'Correct data rows';
     };
 };
