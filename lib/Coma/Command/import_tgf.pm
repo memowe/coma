@@ -85,6 +85,7 @@ sub run ($self, @args) {
     $self->app->data->add_connection($map_id, $_)
         for @unique_links;
 
+    $self->app->data->store_if_neccessary;
     say "    Generated map has ID $map_id.";
 }
 
