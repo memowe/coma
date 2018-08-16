@@ -11,10 +11,10 @@ WriteMakefile(
         'Data::Dump'                    =>  '1.23',
         'DateTime'                      =>  '1.50',
         'DateTime::Format::ISO8601'     =>  '0.08',
-        'EventStore::Tiny'              =>  '0.41',
+        'EventStore::Tiny'              =>  '0.43',
+        'Graph::Centrality::Pagerank'   =>  '1.05',
         'Mojolicious'                   =>  '7.93',
         'Text::Markdown'                =>  '1.0',
-        'Graph::Centrality::Pagerank'   =>  '1.05',
     },
     TEST_REQUIRES => {
         'Clone'                         => '0.39',
