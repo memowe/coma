@@ -6,6 +6,9 @@ Makefile.old
 # Data storage file
 data/data
 
+# Sensible student data
+data/student_data
+
 # Exported graph representation files
 export/*.tgf
 export/*/*.tgf
