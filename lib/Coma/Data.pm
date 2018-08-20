@@ -4,6 +4,7 @@ use Mojo::Base -base, -signatures;
 use Coma::Data::EventStore;
 
 use File::stat;
+use Clone 'clone';
 use List::Util 'max';
 
 has data_filename   => ();
@@ -221,6 +222,7 @@ sub get_connections ($self, $map_id = undef) {
     my @cs = map {values %{$_->{connections}}} @{$self->_get_maps($map_id)};
 
     # Get rid of IDs as they don't make sense here
+    @cs = @{clone \@cs};
     delete $_->{id}  for @cs;
     delete $_->{map} for @cs;
 
