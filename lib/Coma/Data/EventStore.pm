@@ -12,6 +12,7 @@ has _est => sub ($self) {
         ? EventStore::Tiny->new_from_file($est_fn)
         : EventStore::Tiny->new;
     $store->cache_distance(0);
+    $store->slack(1);
 
     return $store;
 };
