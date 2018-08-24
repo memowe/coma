@@ -13,26 +13,32 @@
 <hr />
 <h2>Visualization</h2>
 <p>Double click to view entity details!</p>
-<svg id="canvas" width="800" height="600">
-</svg>
+<svg id="graph" width="800" height="600"></svg>
 
 %# FORCE-DIRECTED GRAPH VISUALIZATION
+%
+%   my $entity_style = {
+%       radius          => 15,
+%       border_width    =>  3,
+%       color           => '#fd9',
+%       border          => '#999',
+%   };
+%   my $label_style = {
+%       width   => 40,
+%       height  => 20,
+%       color   => 'black',
+%   };
+%   my $link_style = {
+%       thickness   => 5,
+%       color       => 'lightgrey',
+%   };
+%
+%= include 'graph_css', entity => $entity_style, label => $label_style, link => $link_style;
 %= javascript begin
 
-var canvas  = d3.select('svg#canvas');
-var width   = + canvas.attr('width');
-var height  = + canvas.attr('height');
-
-var eWidth      = 30;
-var eHeight     = 30;
-var eCol        = '#fd9';
-var eBorder     =  2;
-var eBorderCol  = '#999';
-var eBoxWidth   = 60;
-var eBoxHeight  = eHeight + 2*eBorder;
-var eTextCol    = 'black';
-var lLine       = 1;
-var lCol        = 'black';
+var graph   = d3.select('svg#graph');
+var width   = + graph.attr('width');
+var height  = + graph.attr('height');
 
 // Prepare
 var simulation = d3.forceSimulation();
@@ -41,46 +47,41 @@ var simulation = d3.forceSimulation();
 d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
 
     // A group for all entities
-    var nodes = canvas.append('g').attr('id', 'entity_group');
+    var nodes = graph.append('g').attr('id', 'entity_group');
 
     // A group for each entity
     var nodes_group = nodes.selectAll('g.entity').data(data.nodes)
         .enter().append('g').attr('class', 'entity');
 
     // Interaction!
-    nodes_group
-        .on('mouseover', function (d) { d3.select(this).style('cursor', 'pointer') })
-        .call(d3.drag()
-            .on('start', (d) => {
-                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-                d.fx = d.x;
-                d.fy = d.y;
-            }).on('drag', (d) => {
-                d.fx = d3.event.x;
-                d.fy = d3.event.y;
-            }).on('end', (d) => {
-                if (!d3.event.active) simulation.alphaTarget(0);
-                d.fx = null;
-                d.fy = null;
-            }));
+    nodes_group.call(d3.drag()
+        .on('start', (d) => {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }).on('drag', (d) => {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }).on('end', (d) => {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }));
 
     // Entity circles
     nodes_group.append('circle')
-        .attr('stroke', eBorderCol).attr('stroke-width', eBorder)
-        .attr('fill', eCol).attr('r', eWidth/2);
 
     // Entity text labels
-    nodes_group.append('text').text((d) => d.name)
-        .attr('width', eBoxWidth).attr('height', eBoxHeight)
-        .attr('text-anchor', 'middle').attr('alignment-baseline', 'middle')
-        .attr('font-family', 'sans-serif').attr('font-size', '' + (eWidth / 3) + 'px').attr('fill', eTextCol);
+    nodes_group.append('text').attr('class', 'label').text((d) => d.name)
 
     // Links for each connection
     // Arrow tips: https://stackoverflow.com/a/11809868
-    var links = canvas.append('g').attr('id', 'link_group');
+    var links = graph.append('g').attr('id', 'link_group');
     links.selectAll('line').data(data.links)
         .enter().append('line').attr('class', 'link')
-        .attr('stroke', lCol).attr('stroke-width', lLine);
+
+    // Move to the back
+    links.lower();
 
     // May the force be with us
     simulation
