@@ -34,6 +34,9 @@ var eTextCol    = 'black';
 var lLine       = 1;
 var lCol        = 'black';
 
+// Prepare
+var simulation = d3.forceSimulation();
+
 // Fetch data via JSON
 d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
 
@@ -43,6 +46,23 @@ d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
     // A group for each entity
     var nodes_group = nodes.selectAll('g.entity').data(data.nodes)
         .enter().append('g').attr('class', 'entity');
+
+    // Interaction!
+    nodes_group
+        .on('mouseover', function (d) { d3.select(this).style('cursor', 'pointer') })
+        .call(d3.drag()
+            .on('start', (d) => {
+                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }).on('drag', (d) => {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }).on('end', (d) => {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }));
 
     // Entity circles
     nodes_group.append('circle')
@@ -56,6 +76,7 @@ d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
         .attr('font-family', 'sans-serif').attr('font-size', '' + (eWidth / 3) + 'px').attr('fill', eTextCol);
 
     // Links for each connection
+    // Arrow tips: https://stackoverflow.com/a/11809868
     var links = canvas.append('g').attr('id', 'link_group');
     links.selectAll('line').data(data.links)
         .enter().append('line').attr('class', 'link')
