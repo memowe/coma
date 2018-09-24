@@ -10,6 +10,12 @@
 - Fast concept map creation
 - Graph analysis
 
+## Documentation
+
+- [Getting Started Guide][getting-started]
+
+[getting-started]: docs/Getting_Started.md
+
 ## Author and License
 
 (c) 2014-2018 [Mirko Westermeier][mw]  
