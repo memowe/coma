@@ -13,8 +13,10 @@
 ## Documentation
 
 - [Getting Started Guide][getting-started]
+- [Commands][commands]
 
 [getting-started]: docs/Getting_Started.md
+[commands]: docs/Commands.md
 
 ## Author and License
 

@@ -72,7 +72,8 @@ As coma is a standard [Mojolicious][mojo] web app, it can be run by firing its d
     $ morbo coma
     Server available at http://127.0.0.1:3000
 
-Just open that address in your web browser and have a look at the example data or add new maps.
+Just open that address in your web browser and have a look at the example data or add new maps. To work efficiently with external data, have a look at the [commands][].
 
 [mojo]: https://mojolicious.org/
 [morbo]: https://mojolicious.org/perldoc/morbo
+[commands]: Commands.md
