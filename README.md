@@ -10,6 +10,14 @@
 - Fast concept map creation
 - Graph analysis
 
+## Documentation
+
+- [Getting Started Guide][getting-started]: From zero to hero!
+- [Commands][commands]: Controlling state and data exchange.
+
+[getting-started]: docs/Getting_Started.md
+[commands]: docs/Commands.md
+
 ## Author and License
 
 (c) 2014-2018 [Mirko Westermeier][mw]  
