@@ -12,8 +12,8 @@
 
 ## Documentation
 
-- [Getting Started Guide][getting-started]
-- [Commands][commands]
+- [Getting Started Guide][getting-started]: From zero to hero!
+- [Commands][commands]: Controlling state and data exchange.
 
 [getting-started]: docs/Getting_Started.md
 [commands]: docs/Commands.md
