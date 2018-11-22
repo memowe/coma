@@ -1,0 +1,29 @@
+%= stylesheet begin
+
+#graph .entity circle {
+    r:              <%= $entity->{radius} %>px;
+    stroke-width:   <%= $entity->{border_width} %>px;
+    stroke:         <%= $entity->{border} %>;
+    fill:           <%= $entity->{color} %>;
+}
+
+#graph .entity text.label {
+    width:              <%= $label->{width} %>px;
+    height:             <%= $label->{height} %>px;
+    text-anchor:        middle;
+    alignment-baseline: middle;
+    font-family:        sans-serif;
+    font-size:          <%= $label->{width} / 3 %>px;
+    fill:               <%= $label->{color} %>;
+}
+
+#graph .entity:hover {
+    cursor: pointer;
+}
+
+#graph line.link {
+    stroke:         <%= $link->{color} %>;
+    stroke-width:   <%= $link->{thickness} %>px;
+}
+
+% end

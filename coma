@@ -185,6 +185,37 @@ get '/' => sub ($c) {
     );
 } => 'show_map';
 
+# Deliver map data via JSON in a D3 friendly format
+# as an array of hashes {name => NAME, pagerank => PR}
+get '/d3_map_data' => [format => 'json'] => sub ($c) {
+    my $map_data = $c->stash('map');
+
+    # Calculate reverse pagerank (and derive entities)
+    my $conn_pairs  = $c->data->get_connection_pairs($map_data->{id});
+    my $pagerank    = $c->calculate_pagerank([
+        map [reverse @$_] => @$conn_pairs
+    ]);
+
+    # Combine
+    my @entity_data = map {{
+        name        => $_,
+        pagerank    => $pagerank->{$_},
+    }} sort keys %$pagerank;
+
+    # Rebuild connection structures
+    my @connections = values %{$map_data->{connections}};
+    my @conn_data   = map {{
+        source  => $_->{from},
+        target  => $_->{to},
+        type    => $_->{type},
+    }} @connections;
+
+    $c->render(json => {
+        nodes => \@entity_data,
+        links => \@conn_data,
+    });
+} => 'd3_map_data';
+
 # Edit map meta data
 post '/' => sub ($c) {
     my $map = $c->stash('map');

@@ -13,41 +13,105 @@
 <hr />
 <h2>Visualization</h2>
 <p>Double click to view entity details!</p>
-<div id="canvas"></div>
+<svg id="graph" width="800" height="600"></svg>
 
-%# visualize: may the javascript begin
+%# FORCE-DIRECTED GRAPH VISUALIZATION
+%
+%   my $entity_style = {
+%       radius          => 15,
+%       border_width    =>  3,
+%       color           => '#fd9',
+%       border          => '#999',
+%   };
+%   my $label_style = {
+%       width   => 40,
+%       height  => 20,
+%       color   => 'black',
+%   };
+%   my $link_style = {
+%       thickness   => 5,
+%       color       => 'lightgrey',
+%   };
+%
+%= include 'graph_css', entity => $entity_style, label => $label_style, link => $link_style;
 %= javascript begin
-$(function() {
-var g = new Graph();
 
-%# add all nodes
-% for my $e (@$entities) {
-%   my $url = url_for 'show_entity', entity_name => $e;
-    g.addNode("<%= quotemeta $e %>", {render: function(raphael, node) {
-        var shape = Graph.Renderer.defaultRenderFunc(raphael, node);
-        shape.dblclick(function() {
-            window.location.href = '<%= $url %>';
+var graph   = d3.select('svg#graph');
+var width   = + graph.attr('width');
+var height  = + graph.attr('height');
+
+// Prepare
+var simulation = d3.forceSimulation();
+
+// Fetch data via JSON
+d3.json('<%= url_for d3_map_data => (format => 'json')  %>').then((data) => {
+
+    // A group for all entities
+    var nodes = graph.append('g').attr('id', 'entity_group');
+
+    // A group for each entity
+    var nodes_group = nodes.selectAll('g.entity').data(data.nodes)
+        .enter().append('g').attr('class', 'entity');
+
+    // Interaction!
+    nodes_group.call(d3.drag()
+        .on('start', (d) => {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }).on('drag', (d) => {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }).on('end', (d) => {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }));
+
+    // Entity circles
+    nodes_group.append('circle')
+
+    // Entity text labels
+    nodes_group.append('text').attr('class', 'label').text((d) => d.name)
+
+    // Links for each connection
+    // Arrow tips: https://stackoverflow.com/a/11809868
+    var links = graph.append('g').attr('id', 'link_group');
+    links.selectAll('line').data(data.links)
+        .enter().append('line').attr('class', 'link')
+
+    // Move to the back
+    links.lower();
+
+    // May the force be with us
+    simulation
+        .nodes(data.nodes)
+        .force('chargeForce', d3.forceManyBody())
+        .force('centerForce', d3.forceCenter(width/2, height/2))
+        .force('linkForce',   d3.forceLink(data.links).id((d) => d.name))
+        .on('tick', () => {
+
+            // Circles
+            nodes_group.selectAll('circle')
+                .attr('cx', (d) => d.x)
+                .attr('cy', (d) => d.y);
+
+            // Labels
+            nodes_group.selectAll('text')
+                .attr('x', (d) => d.x)
+                .attr('y', (d) => d.y);
+
+            // Links
+            links.selectAll('line')
+                .attr('x1', (d) => d.source.x)
+                .attr('y1', (d) => d.source.y)
+                .attr('x2', (d) => d.target.x)
+                .attr('y2', (d) => d.target.y);
         });
-        return shape;
-    }});
-% }
-
-%# add all edges
-% for my $conn (values %{$map->{connections}}) {
-    g.addEdge(
-        "<%= quotemeta $conn->{from} %>", "<%= quotemeta $conn->{to} %>",
-        {label: "<%= quotemeta $conn->{type} %>", directed: true});
-% }
-
-%# draw that shizzle
-var layouter = new Graph.Layout.Spring(g);
-layouter.layout();
-var renderer = new Graph.Renderer.Raphael('canvas', g, 1200, 600);
-renderer.draw();
-
 });
-%# end of javascript
+
 % end
+%# END OF VISUALIZATION
 
 %# enter a connection form
 <hr />

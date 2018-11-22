@@ -6,7 +6,7 @@
 ## Features
 
 - TGF import/export
-- Graph visualization
+- Force-directed graph visualization
 - Fast concept map creation
 - Graph analysis
 

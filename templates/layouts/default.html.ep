@@ -4,10 +4,8 @@
     <title><%= 'coma: ' . title %></title>
     %= javascript '/jquery.js'
     %= javascript '/jquery-ui.js'
-    %= javascript '/raphael-min.js'
-    %= javascript '/dracula_graph.js'
-    %= javascript '/dracula_graffle.js'
     %= stylesheet '/jquery-ui.css'
+    %= javascript '/d3.js'
 </head>
 <body>
 %= include 'breadcrumbs'
