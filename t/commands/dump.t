@@ -196,7 +196,7 @@ subtest 'Dumping verbose event log of the system' => sub {
         my $event_log = clone $t->app->data->events->_est->events->events;
 
         # Don't look at transformations as they can't be compared
-        delete $_->{transformation} for @$event_log, @events;
+        delete $_->{trans_store} for @$event_log, @events;
         is_deeply \@events, $event_log, 'Correct event log';
     }, 'No time argument';
 
@@ -230,7 +230,7 @@ subtest 'Dumping verbose event log of the system' => sub {
             my $event_log = clone $t->app->data->events->_est->events->events;
 
             # Don't look at transformations as they can't be compared
-            delete $_->{transformation} for @$event_log, @events;
+            delete $_->{trans_store} for @$event_log, @events;
             is_deeply \@events, $event_log, 'Correct event log';
         }, 'Timestamp';
 

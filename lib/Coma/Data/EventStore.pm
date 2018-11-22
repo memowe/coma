@@ -5,22 +5,16 @@ use EventStore::Tiny;
 
 has data_filename => ();
 has _est => sub ($self) {
-    my $est_fn = $self->data_filename;
-
-    # Create event store
-    my $store = (defined $est_fn and -e $est_fn)
-        ? EventStore::Tiny->new_from_file($est_fn)
-        : EventStore::Tiny->new;
+    my $store = EventStore::Tiny->new;
     $store->cache_distance(0);
     $store->slack(1);
-
     return $store;
 };
 
 sub store_to_file ($self) {
     die "No data_filename given!\n"
         unless defined $self->data_filename;
-    $self->_est->store_to_file($self->data_filename);
+    $self->_est->export_events($self->data_filename);
 }
 
 # Helper
@@ -70,6 +64,10 @@ sub init ($self) {
     $self->_est->register_event(ConnectionRemoved => sub ($state, $data) {
         delete $state->{maps}{$data->{map}}{connections}{$data->{id}};
     });
+
+    # Import existing events, if any
+    my $est_fn = $self->data_filename;
+    $self->_est->import_events($est_fn) if defined $est_fn and -e $est_fn;
 }
 
 sub is_empty ($self) {
