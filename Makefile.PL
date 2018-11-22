@@ -12,7 +12,7 @@ WriteMakefile(
         'Data::Dump'                    =>  '1.23',
         'DateTime'                      =>  '1.50',
         'DateTime::Format::ISO8601'     =>  '0.08',
-        'EventStore::Tiny'              =>  '0.5',
+        'EventStore::Tiny'              =>  '0.6',
         'Graph::Centrality::Pagerank'   =>  '1.05',
         'Mojolicious'                   =>  '7.93',
         'Text::Markdown'                =>  '1.0',
